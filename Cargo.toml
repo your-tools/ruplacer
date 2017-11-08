@@ -1,6 +1,14 @@
 [package]
 name = "ruplacer"
 version = "0.1.0"
-authors = [" <>"]
+authors = ["Dimitri Merejkowsky <d.merej@gmail.com>"]
+description = "Find and replace text in files"
+license = "BSD-3-Clause"
+
+
+keywords = ["replacer", "find", "grep", "command", "line"]
+categories = ["command-line-utilities"]
+
+repository = "https://github.com/TankerApp/ruplacer"
 
 [dependencies]
