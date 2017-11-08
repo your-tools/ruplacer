@@ -12,3 +12,9 @@ categories = ["command-line-utilities"]
 repository = "https://github.com/TankerApp/ruplacer"
 
 [dependencies]
+ignore = "0.3.1"
+clap = "2.27.1"
+
+[[bin]]
+name = "fr"
+path = "src/main.rs"
