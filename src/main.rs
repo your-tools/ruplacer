@@ -13,28 +13,30 @@ fn main() {
             .help("the pattern to grep for")
             .required(true)
             .index(1))
-        .arg(Arg::with_name("DIR")
-            .short("d")
-            .long("dir")
-            .value_name("DIR")
-            .index(2)
+        .arg(Arg::with_name("path")
+            .multiple(true)
             .help("the directory to find into")
-            .takes_value(true))
+            )
         .arg(Arg::with_name("verbose")
             .short("v")
+            .long("verbose")
             .multiple(true)
             .help("Sets the level of verbosity"))
         .get_matches();
     //println!("{}", matches);
-    let dir = matches.value_of("DIR").unwrap_or("./");
-    println!("Root directory: {}", dir);
-
-    for result in Walk::new(dir) {
-        // Each item yielded by the iterator is either a directory entry or an
-        // error, so either print the path or the error.
-        match result {
-            Ok(entry) => println!("{}", entry.path().display()),
-            Err(err) => println!("ERROR: {}", err),
+    let dirs: Vec<_> = match matches.values_of("path") {
+        None => vec!["./"],
+        Some(vals) => vals.collect(),
+    };
+    for dir in dirs {
+        println!("Root directory: {}", dir);
+        for result in Walk::new(dir) {
+            // Each item yielded by the iterator is either a directory entry or an
+            // error, so either print the path or the error.
+            match result {
+                Ok(entry) => println!("{}", entry.path().display()),
+                Err(err) => println!("ERROR: {}", err),
+            }
         }
     }
 }
