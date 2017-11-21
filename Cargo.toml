@@ -14,6 +14,9 @@ repository = "https://github.com/TankerApp/ruplacer"
 [dependencies]
 ignore = "0.3.1"
 clap = "2.27.1"
+difference = "1.0.0"
+regex = "0.2.2"
+term = "0.2.7"
 
 [[bin]]
 name = "fr"
