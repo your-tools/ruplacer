@@ -17,6 +17,8 @@ clap = "2.27.1"
 difference = "1.0.0"
 regex = "0.2.2"
 term = "0.2.7"
+structopt = "0.1.0"
+structopt-derive = "0.1.0"
 
 [[bin]]
 name = "fr"

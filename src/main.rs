@@ -3,8 +3,14 @@ extern crate ignore;
 extern crate regex;
 extern crate difference;
 extern crate term;
+extern crate structopt;
 
-use clap::{App, Arg};
+#[macro_use]
+extern crate structopt_derive;
+
+
+
+use structopt::StructOpt;
 use ignore::Walk;
 use std::path::Path;
 use std::fs::File;
@@ -79,48 +85,34 @@ fn grep_file(replacer: &Replacer, file_name: &Path) {
     let mut data = String::new();
     f.read_to_string(&mut data).expect("error reading file");
     replacer.replace(data.as_str());
+
+#[derive(StructOpt, Debug)]
+#[structopt(name = "fr",
+            version = "0.1.0",
+            author = "The ruplacer team",
+            about = "Find and Ruplace patterns in files and filenames.")]
+struct Opt {
+    #[structopt(short = "v", long = "verbose", help = "Activate verbose mode")]
+    debug: bool,
+
+    #[structopt(help = "The pattern to grep for")]
+    pattern: String,
+
+    #[structopt(help = "The replacement")]
+    replacement: Option<String>,
+
+    #[structopt(help = "paths (default to current working directory)")]
+    paths: Vec<String>,
 }
 
 fn main() {
-    let matches = App::new("fr")
-        .version("0.1.0")
-        .author("The ruplacer team")
-        .about("Find and replace")
-        .arg(
-            Arg::with_name("PATTERN")
-                .help("the pattern to grep for")
-                .required(true)
-                .index(1),
-        )
-        .arg(
-            Arg::with_name("REPLACEMENT")
-                .help("the replacement")
-                .required(false)
-                .index(2),
-        )
-        .arg(
-            Arg::with_name("path")
-                .multiple(true)
-                .help("the directory to find into"),
-        )
-        .arg(
-            Arg::with_name("verbose")
-                .short("v")
-                .long("verbose")
-                .multiple(true)
-                .help("Sets the level of verbosity"),
-        )
-        .get_matches();
-    //println!("{}", matches);
-    let dirs: Vec<_> = match matches.values_of("path") {
-        None => vec!["./"],
-        Some(vals) => vals.collect(),
+    let opts = Opt::from_args();
+    let dirs: Vec<_> = match opts.paths.len() {
+        0 => vec!["./".to_string()],
+        _ => opts.paths,
     };
 
-    let pattern = matches.value_of("PATTERN").unwrap();
-    let replacement = matches.value_of("REPLACEMENT").unwrap();
-
-    let replacer = Replacer::new(pattern, replacement);
+    let replacer = Replacer::new(opts.pattern.as_str(), opts.replacement);
 
     for dir in dirs {
         println!("Root directory: {}", dir);
@@ -128,7 +120,7 @@ fn main() {
             // Each item yielded by the iterator is either a directory entry or an
             // error, so either print the path or the error.
             match result {
-                Ok(entry) => grep_file(&replacer, entry.path()),
+                Ok(entry) => replace_file(&replacer, entry.path()),
                 Err(err) => println!("ERROR: {}", err),
             }
         }
