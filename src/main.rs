@@ -9,73 +9,17 @@ extern crate structopt;
 extern crate structopt_derive;
 
 
+mod replacer;
 
 use structopt::StructOpt;
 use ignore::Walk;
 use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*;
-use regex::Regex;
-use difference::{Changeset, Difference};
-
-#[allow(unused_must_use)]
-fn term_show_diff(before: &str, after: &str) {
-   // Compare both texts, the third parameter defines the split level.
-    let Changeset { diffs, .. } = Changeset::new(before, after, "\n");
-
-    let mut t = term::stdout().unwrap();
-
-    for i in 0..diffs.len() {
-        match diffs[i] {
-            Difference::Same(ref _x) => {
-                t.reset().unwrap();
-                writeln!(t, "");
-            }
-            Difference::Add(ref x) => {
-                t.fg(term::color::GREEN).unwrap();
-                writeln!(t, "+{}", x);
-            }
-            Difference::Rem(ref x) => {
-                t.fg(term::color::RED).unwrap();
-                writeln!(t, "-{}", x);
-            }
-        }
-    }
-    t.reset().unwrap();
-    t.flush().unwrap();
-}
+use replacer::Replacer;
 
 
-pub struct Replacer {
-    re: Regex,
-    replacement: String,
-}
-
-impl Replacer {
-    pub fn new(pattern: &str, replacement: &str) -> Replacer {
-        let re = Regex::new(pattern).expect("Invalid regular expression");
-        Replacer {
-            re: re,
-            replacement: replacement.to_string(),
-        }
-    }
-
-    pub fn replace(&self, buf: &str) {
-        let after = self.re.replace_all(buf, self.replacement.as_str());
-
-        if buf != after {
-            term_show_diff(buf, &after)
-        }
-        // let re = Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap();
-
-        // for m in greper.iter(data.as_bytes()) {
-        //     println!("match: {} - {}", m.start(), m.end())
-        // }
-    }
-}
-
-
-fn grep_file(replacer: &Replacer, file_name: &Path) {
+fn replace_file(replacer: &Replacer, file_name: &Path) {
     if !file_name.is_file() {
         return
     }
@@ -84,7 +28,8 @@ fn grep_file(replacer: &Replacer, file_name: &Path) {
     let mut f = File::open(file_name).expect("file not found");
     let mut data = String::new();
     f.read_to_string(&mut data).expect("error reading file");
-    replacer.replace(data.as_str());
+    replacer.grep_or_replace(data.as_str());
+}
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "fr",
