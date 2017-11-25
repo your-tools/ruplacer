@@ -67,7 +67,7 @@ impl FileReplacer for Replacer {
 
 impl Replacer {
     pub fn new(pattern: &str, replacement: Option<String>) -> Replacer {
-        let re = Regex::new(pattern).expect("invalid regular expression");
+        let re = Regex::new(pattern).expect("Invalid regular expression");
         Replacer {
             re: re,
             replacement: replacement,
