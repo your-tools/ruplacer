@@ -1,6 +1,10 @@
 use term;
 use regex::Regex;
 use difference::{Changeset, Difference};
+use std::path::Path;
+use std::fs::File;
+use std::io::prelude::*;
+use std::io::{Result as IoResult, Error as IoError, ErrorKind};
 
 pub struct Replacer {
     re: Regex,
@@ -34,6 +38,32 @@ fn term_show_diff(before: &str, after: &str) {
     t.flush().unwrap();
 }
 
+pub trait FileReplacer {
+    fn replace_in_file(&self, file_name: &Path, dry_run: bool) -> IoResult<()>;
+}
+
+impl FileReplacer for Replacer {
+    fn replace_in_file(&self, file_path: &Path, dry_run: bool) -> IoResult<()> {
+        if !file_path.is_file() {
+            return Err(IoError::from(ErrorKind::InvalidInput))
+        }
+        println!("{}", file_path.display());
+
+        let mut data = String::new();
+        {
+            let mut f = File::open(file_path).expect("file not found");
+            f.read_to_string(&mut data).expect("error reading file");
+        }
+        let new_data = self.replace(data.as_str());
+        if !dry_run {
+            println!("TODO: implement replace");
+            // Recreate the file and dump the processed contents to it
+            let mut dst = File::create(&file_path).expect("error opening the file for writing");
+            dst.write(new_data.as_bytes()).expect("error writing to file");
+        }
+        Ok(())
+    }
+}
 
 impl Replacer {
     pub fn new(pattern: &str, replacement: Option<String>) -> Replacer {
@@ -47,8 +77,8 @@ impl Replacer {
     pub fn grep_or_replace(&self, buf: &str) {
         match self.replacement {
             None => self.grep(buf),
-            Some(_) => self.replace(buf),
-        }
+            Some(_) => {self.replace(buf);},
+        };
     }
 
     pub fn grep(&self, _buf: &str) {
@@ -58,13 +88,14 @@ impl Replacer {
         // }
     }
 
-    pub fn replace(&self, buf: &str) {
+    pub fn replace(&self, buf: &str) -> String {
         let replacement = self.replacement.as_ref().unwrap();
         let after = self.re.replace_all(buf, replacement.as_str());
 
         if buf != after {
             term_show_diff(buf, &after)
         }
+        after.to_string()
     }
 }
 
