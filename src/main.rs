@@ -36,7 +36,15 @@ struct ReplacerOpts {
 }
 
 fn walk_file(replacer: &Replacer, opts: &ReplacerOpts, file_name: &Path) {
-    replacer.replace_in_file(file_name, !opts.go);
+    if opts.replacement != None {
+        if let Err(x) = replacer.replace_in_file(file_name, !opts.go) {
+            println!("{}", x);
+        }
+    } else {
+        if let Err(x) = replacer.grep_in_file(file_name) {
+            println!("{}", x);
+        }
+    }
 }
 
 fn walk_paths(replacer: &Replacer, opts: &ReplacerOpts) {

@@ -1,6 +1,7 @@
 use term;
 use regex::Regex;
 use difference::{Changeset, Difference};
+use std::io::{Result as IoResult};
 
 mod file_replacer;
 
@@ -11,31 +12,31 @@ pub struct Replacer {
     replacement: Option<String>,
 }
 
-#[allow(unused_must_use)]
-fn term_show_diff(before: &str, after: &str) {
+fn term_show_diff(before: &str, after: &str) -> IoResult<()> {
    // Compare both texts, the third parameter defines the split level.
     let Changeset { diffs, .. } = Changeset::new(before, after, "\n");
 
     let mut t = term::stdout().unwrap();
 
-    for i in 0..diffs.len() {
-        match diffs[i] {
+    for diff in diffs {
+        match diff {
             Difference::Same(ref _x) => {
                 t.reset().unwrap();
-                writeln!(t, "");
+                writeln!(t, "")?;
             }
             Difference::Add(ref x) => {
                 t.fg(term::color::GREEN).unwrap();
-                writeln!(t, "+{}", x);
+                writeln!(t, "+{}", x.trim())?;
             }
             Difference::Rem(ref x) => {
                 t.fg(term::color::RED).unwrap();
-                writeln!(t, "-{}", x);
+                writeln!(t, "-{}", x.trim())?;
             }
         }
     }
     t.reset().unwrap();
     t.flush().unwrap();
+    Ok(())
 }
 
 impl Replacer {
@@ -47,28 +48,22 @@ impl Replacer {
         }
     }
 
-    pub fn grep_or_replace(&self, buf: &str) {
-        match self.replacement {
-            None => self.grep(buf),
-            Some(_) => {self.replace(buf);},
-        };
-    }
-
-    pub fn grep(&self, _buf: &str) {
+    pub fn grep(&self, _buf: &str) -> IoResult<()> {
         println!("Grep not implemented yet");
+        Ok(())
         // for m in greper.iter(data.as_bytes()) {
         //     println!("match: {} - {}", m.start(), m.end())
         // }
     }
 
-    pub fn replace(&self, buf: &str) -> String {
+    pub fn replace(&self, buf: &str) -> IoResult<String> {
         let replacement = self.replacement.as_ref().unwrap();
         let after = self.re.replace_all(buf, replacement.as_str());
 
         if buf != after {
-            term_show_diff(buf, &after)
+            term_show_diff(buf, &after)?;
         }
-        after.to_string()
+        Ok(after.to_string())
     }
 }
 
