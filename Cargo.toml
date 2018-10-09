@@ -12,6 +12,7 @@ categories = ["command-line-utilities"]
 repository = "https://github.com/TankerApp/ruplacer"
 
 [dependencies]
+ignore = "0.4"
 
 
 [dev-dependencies]
