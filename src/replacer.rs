@@ -1,4 +1,7 @@
+extern crate colored;
+use self::colored::*;
 extern crate difference;
+use self::difference::{Changeset, Difference};
 use errors::Error;
 use ignore;
 use std;
@@ -114,11 +117,36 @@ impl FilePatcher {
     }
 
     pub fn print_patch(&self) {
-        println!("Patching: {}", self.path.to_string_lossy());
+        println!(
+            "{} {}",
+            "Patching".blue(),
+            self.path.to_string_lossy().bold()
+        );
         for replacement in &self.replacements {
-            let Replacement { line_no, old, new } = replacement;
-            let changeset = difference::Changeset::new(old, new, " ");
-            println!("{} {}", line_no, changeset);
+            let Replacement {
+                line_no: _,
+                old,
+                new,
+            } = replacement;
+            let changeset = Changeset::new(old, new, " ");
+            print!("{} ", "--".red());
+            for diff in &changeset.diffs {
+                match diff {
+                    Difference::Same(s) => print!("{}", s),
+                    Difference::Rem(s) => print!(" {} ", s.red().underline()),
+                    _ => (),
+                }
+            }
+            print!("\n");
+            print!("{} ", "++".green());
+            for diff in &changeset.diffs {
+                match diff {
+                    Difference::Same(s) => print!("{}", s),
+                    Difference::Add(s) => print!(" {} ", s.green().underline()),
+                    _ => (),
+                }
+            }
+            print!("\n\n");
         }
     }
 }

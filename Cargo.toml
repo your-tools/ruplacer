@@ -15,6 +15,7 @@ repository = "https://github.com/TankerApp/ruplacer"
 difference = "2.0"
 ignore = "0.4"
 structopt = "0.2"
+colored = "1.6"
 
 
 [dev-dependencies]
