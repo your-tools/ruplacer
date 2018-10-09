@@ -5,16 +5,24 @@ use std::path::{Path, PathBuf};
 
 pub struct Replacer {
     path: PathBuf,
+    dry_run: bool,
 }
 
 impl Replacer {
     pub fn new(path: PathBuf) -> Replacer {
-        Replacer { path }
+        Replacer {
+            path,
+            dry_run: false,
+        }
     }
 
     pub fn replace(&self, pattern: &str, replacement: &str) -> Result<(), Error> {
         self.walk(pattern, replacement)?;
         Ok(())
+    }
+
+    pub fn dry_run(&mut self, dry_run: bool) {
+        self.dry_run = dry_run
     }
 
     pub fn process_file(
@@ -26,7 +34,9 @@ impl Replacer {
         let contents = fs::read_to_string(entry)?;
         let contents = contents.replace(pattern, replacement);
         println!("Processing: {:?}", entry);
-        fs::write(entry, &contents)?;
+        if !self.dry_run {
+            fs::write(entry, &contents)?;
+        }
 
         Ok(())
     }

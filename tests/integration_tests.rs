@@ -38,6 +38,23 @@ fn test_replace_old_by_new() {
 
     let top_txt_path = data_path.join("top.txt");
     assert_replaced(&top_txt_path);
+
+    // Also check recursion inside the data dir:
+    let foo_path = data_path.join("a_dir/sub/foo.txt");
+    assert_replaced(&foo_path);
+}
+
+#[test]
+fn test_dry_run() {
+    let tmp_dir = TempDir::new("test-replacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+
+    let mut replacer = Replacer::new(data_path.to_path_buf());
+    replacer.dry_run(true);
+    replacer.replace("old", "new").expect("replacer failed");
+
+    let top_txt_path = data_path.join("top.txt");
+    assert_not_replaced(&top_txt_path);
 }
 
 #[test]
