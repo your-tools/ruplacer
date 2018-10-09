@@ -7,10 +7,25 @@ pub struct Error {
 }
 
 impl Error {
-    fn new(description: &str) -> Error {
+    pub fn new(description: &str) -> Error {
         Error {
             description: String::from(description),
         }
+    }
+
+    pub fn from_read_error(path: &std::path::Path, io_error: &std::io::Error) -> Result<(), Error> {
+        let path = path.to_string_lossy();
+        let message = format!("Error when reading {}: {}", path, io_error);
+        Err(Error::new(&message))
+    }
+
+    pub fn from_write_error(
+        path: &std::path::Path,
+        io_error: &std::io::Error,
+    ) -> Result<(), Error> {
+        let path = path.to_string_lossy();
+        let message = format!("Error when writing {}: {}", path, io_error);
+        Err(Error::new(&message))
     }
 }
 

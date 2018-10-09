@@ -6,7 +6,7 @@ use errors::Error;
 use ignore;
 use std;
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, ErrorKind};
 use std::path::{Path, PathBuf};
 
 pub struct Replacer {
@@ -37,14 +37,25 @@ impl Replacer {
         pattern: &str,
         replacement: &str,
     ) -> Result<(), Error> {
-        let file_patcher = FilePatcher::new(entry.to_path_buf(), pattern, replacement)?;
+        let file_patcher = FilePatcher::new(entry.to_path_buf(), pattern, replacement);
+        if let Err(err) = &file_patcher {
+            match err.kind() {
+                // Just ignore binay or non-utf8 files
+                ErrorKind::InvalidData => return Ok(()),
+                _ => return Error::from_read_error(entry, err),
+            }
+        }
+        let file_patcher = file_patcher.unwrap();
         let replacements = file_patcher.replacements();
         if replacements.is_empty() {
             return Ok(());
         }
         file_patcher.print_patch();
-        if !self.dry_run {
-            file_patcher.run()?;
+        if self.dry_run {
+            return Ok(());
+        }
+        if let Err(err) = file_patcher.run() {
+            return Error::from_write_error(&entry, &err);
         }
         Ok(())
     }
@@ -80,7 +91,11 @@ struct FilePatcher {
 }
 
 impl FilePatcher {
-    pub fn new(path: PathBuf, pattern: &str, replacement: &str) -> Result<FilePatcher, Error> {
+    pub fn new(
+        path: PathBuf,
+        pattern: &str,
+        replacement: &str,
+    ) -> Result<FilePatcher, std::io::Error> {
         let mut replacements = vec![];
         let file = File::open(&path)?;
         let reader = BufReader::new(file);
@@ -111,7 +126,7 @@ impl FilePatcher {
         &self.replacements
     }
 
-    pub fn run(&self) -> Result<(), Error> {
+    pub fn run(&self) -> Result<(), std::io::Error> {
         std::fs::write(&self.path, &self.new_contents)?;
         Ok(())
     }

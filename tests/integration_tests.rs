@@ -68,3 +68,14 @@ fn test_with_gitignore() {
     let ignored_path = data_path.join(".hidden/hidden.txt");
     assert_not_replaced(&ignored_path);
 }
+
+#[test]
+fn test_skip_non_utf8_files() {
+    let tmp_dir = TempDir::new("test-replacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+    let bin_path = data_path.join("foo.latin1");
+    fs::write(bin_path, b"caf\xef\n").unwrap();
+
+    let replacer = Replacer::new(data_path.to_path_buf());
+    replacer.replace("old", "new").expect("replacer failed");
+}
