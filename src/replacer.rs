@@ -84,6 +84,29 @@ struct Replacement {
     new: String,
 }
 
+impl Replacement {
+    fn print_self(&self) {
+        let changeset = Changeset::new(&self.old, &self.new, "");
+        print!("{} ", "--".red());
+        for diff in &changeset.diffs {
+            match diff {
+                Difference::Same(s) => print!("{}", s),
+                Difference::Rem(s) => print!("{}", s.red().underline()),
+                _ => (),
+            }
+        }
+        print!("\n");
+        print!("{} ", "++".green());
+        for diff in &changeset.diffs {
+            match diff {
+                Difference::Same(s) => print!("{}", s),
+                Difference::Add(s) => print!("{}", s.green().underline()),
+                _ => (),
+            }
+        }
+    }
+}
+
 struct FilePatcher {
     replacements: Vec<Replacement>,
     path: PathBuf,
@@ -138,30 +161,8 @@ impl FilePatcher {
             self.path.to_string_lossy().bold()
         );
         for replacement in &self.replacements {
-            let Replacement {
-                line_no: _,
-                old,
-                new,
-            } = replacement;
-            let changeset = Changeset::new(old, new, " ");
-            print!("{} ", "--".red());
-            for diff in &changeset.diffs {
-                match diff {
-                    Difference::Same(s) => print!("{}", s),
-                    Difference::Rem(s) => print!(" {} ", s.red().underline()),
-                    _ => (),
-                }
-            }
+            replacement.print_self();
             print!("\n");
-            print!("{} ", "++".green());
-            for diff in &changeset.diffs {
-                match diff {
-                    Difference::Same(s) => print!("{}", s),
-                    Difference::Add(s) => print!(" {} ", s.green().underline()),
-                    _ => (),
-                }
-            }
-            print!("\n\n");
         }
     }
 }
@@ -181,6 +182,16 @@ mod tests {
         assert_eq!(actual_replacement.line_no, 2);
         assert_eq!(actual_replacement.new, "Top: new is nice");
         assert_eq!(actual_replacement.old, "Top: old is nice");
+    }
+
+    #[test]
+    fn test_display() {
+        let replacement = Replacement {
+            line_no: 1,
+            old: "trustchain_creation: 0".to_owned(),
+            new: "blockchain_creation: 0".to_owned(),
+        };
+        replacement.print_self();
     }
 
 }
