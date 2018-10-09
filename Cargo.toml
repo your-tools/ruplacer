@@ -12,3 +12,7 @@ categories = ["command-line-utilities"]
 repository = "https://github.com/TankerApp/ruplacer"
 
 [dependencies]
+
+
+[dev-dependencies]
+tempdir = "0.3"
