@@ -13,6 +13,7 @@ repository = "https://github.com/TankerApp/ruplacer"
 
 [dependencies]
 ignore = "0.4"
+structopt = "0.2"
 
 
 [dev-dependencies]
