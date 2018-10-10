@@ -1,6 +1,9 @@
 Ruplacer
 =========
 
+<a href="https://crates.io/crates/ruplacer"><img src="https://img.shields.io/crates/v/ruplacer.svg"/></a>
+
+
 Replace text in files
 
 Usage
