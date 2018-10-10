@@ -38,7 +38,7 @@ fn test_replace_old_by_new() {
     let directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
     directory_patcher
         .patch(query::substring("old", "new"))
-        .expect("replacer failed");
+        .expect("ruplacer failed");
 
     let top_txt_path = data_path.join("top.txt");
     assert_replaced(&top_txt_path);
@@ -50,14 +50,14 @@ fn test_replace_old_by_new() {
 
 #[test]
 fn test_dry_run() {
-    let tmp_dir = TempDir::new("test-replacer").expect("failed to create temp dir");
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
 
     let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
     directory_patcher.dry_run(true);
     directory_patcher
         .patch(query::substring("old", "new"))
-        .expect("replacer failed");
+        .expect("ruplacer failed");
 
     let top_txt_path = data_path.join("top.txt");
     assert_not_replaced(&top_txt_path);
@@ -65,13 +65,13 @@ fn test_dry_run() {
 
 #[test]
 fn test_with_gitignore() {
-    let tmp_dir = TempDir::new("test-replacer").expect("failed to create temp dir");
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
 
     let directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
     directory_patcher
         .patch(query::substring("old", "new"))
-        .expect("replacer failed");
+        .expect("ruplacer failed");
 
     let ignored_path = data_path.join(".hidden/hidden.txt");
     assert_not_replaced(&ignored_path);
@@ -79,7 +79,7 @@ fn test_with_gitignore() {
 
 #[test]
 fn test_skip_non_utf8_files() {
-    let tmp_dir = TempDir::new("test-replacer").expect("failed to create temp dir");
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
     let bin_path = data_path.join("foo.latin1");
     fs::write(bin_path, b"caf\xef\n").unwrap();
@@ -87,5 +87,5 @@ fn test_skip_non_utf8_files() {
     let directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
     directory_patcher
         .patch(query::substring("old", "new"))
-        .expect("replacer failed");
+        .expect("ruplacer failed");
 }

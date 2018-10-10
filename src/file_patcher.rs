@@ -124,7 +124,7 @@ mod tests {
 
     #[test]
     fn test_patch_file() {
-        let temp_dir = tempdir::TempDir::new("test-replacer").unwrap();
+        let temp_dir = tempdir::TempDir::new("test-ruplacer").unwrap();
         let file_path = temp_dir.path().join("foo.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line\n").unwrap();
         let file_patcher =
@@ -138,7 +138,7 @@ mod tests {
     #[test]
     fn test_replacement_display() {
         // This test cannot fail. It's just here so you can tweak the look and feel
-        // of replacer easily.
+        // of ruplacer easily.
         let replacement = Replacement {
             line_no: 1,
             old: "trustchain_creation: 0".to_owned(),
