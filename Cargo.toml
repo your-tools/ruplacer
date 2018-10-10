@@ -17,6 +17,7 @@ difference = "2.0"
 ignore = "0.4"
 structopt = "0.2"
 colored = "1.6"
+regex = "1"
 
 
 [dev-dependencies]

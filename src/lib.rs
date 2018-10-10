@@ -1,6 +1,7 @@
 extern crate ignore;
 extern crate colored;
 extern crate difference;
+extern crate regex;
 mod errors;
 pub mod query;
 mod line_patcher;
