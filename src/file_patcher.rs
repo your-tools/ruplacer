@@ -23,8 +23,14 @@ impl FilePatcher {
         let file = File::open(&path)?;
         let reader = BufReader::new(file);
         let mut new_contents = String::new();
-        for (num, line) in reader.lines().enumerate() {
-            let line = line?;
+        for (num, chunk) in reader.split('\n' as u8).enumerate() {
+            let chunk = chunk?; // consume the io::error
+            let line = String::from_utf8(chunk);
+            if line.is_err() {
+                let io_error: std::io::Error = std::io::ErrorKind::InvalidData.into();
+                return Err(io_error);
+            }
+            let line = line.unwrap();
             let new_line = line_patcher::patch(&line, pattern, replacement);
             if new_line != line {
                 let replacement = Replacement {
@@ -37,6 +43,7 @@ impl FilePatcher {
             } else {
                 new_contents.push_str(&line);
             }
+            new_contents.push_str("\n");
         }
         Ok(FilePatcher {
             replacements,
@@ -99,6 +106,7 @@ impl Replacement {
 
 #[cfg(test)]
 mod tests {
+    extern crate tempdir;
     use super::*;
     use std::fs;
 
@@ -116,11 +124,13 @@ mod tests {
 
     #[test]
     fn test_patch_file() {
-        let top_path = std::path::Path::new("tests/data/top.txt");
-        let file_patcher = FilePatcher::new(top_path.to_path_buf(), "old", "new").unwrap();
+        let temp_dir = tempdir::TempDir::new("test-replacer").unwrap();
+        let file_path = temp_dir.path().join("foo.txt");
+        fs::write(&file_path, "first line\nI say: old is nice\nlast line\n").unwrap();
+        let file_patcher = FilePatcher::new(file_path.to_path_buf(), "old", "new").unwrap();
         file_patcher.run().unwrap();
-        let actual = fs::read_to_string(&top_path).unwrap();
-        let expected = "first line\nTop: new is nice\nsecond line\n";
+        let actual = fs::read_to_string(&file_path).unwrap();
+        let expected = "first line\nI say: new is nice\nlast line\n";
         assert_eq!(actual, expected);
     }
 
