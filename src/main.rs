@@ -27,9 +27,9 @@ fn main() {
     let dry_run = !opt.go;
 
     let path = opt.path.unwrap_or(Path::new(".").to_path_buf());
-    let mut replacer = ruplacer::Replacer::new(path);
-    replacer.dry_run(dry_run);
-    let outcome = replacer.replace(&opt.pattern, &opt.replacement);
+    let mut directory_patcher = ruplacer::DirectoryPatcher::new(path);
+    directory_patcher.dry_run(dry_run);
+    let outcome = directory_patcher.patch(&opt.pattern, &opt.replacement);
     if let Err(err) = outcome {
         eprintln!("{}", err);
         process::exit(1);
