@@ -4,6 +4,7 @@ version = "0.2.1"
 authors = ["Dimitri Merejkowsky <d.merej@gmail.com>"]
 description = "Find and replace text in files"
 license = "BSD-3-Clause"
+readme = "README.md"
 
 
 keywords = ["replacer", "find", "grep", "command", "line"]
