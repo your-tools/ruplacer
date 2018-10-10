@@ -5,7 +5,8 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
-use line_patcher;
+use line_patcher::LinePatcher;
+use query::Query;
 
 pub struct FilePatcher {
     replacements: Vec<Replacement>,
@@ -14,11 +15,7 @@ pub struct FilePatcher {
 }
 
 impl FilePatcher {
-    pub fn new(
-        path: PathBuf,
-        pattern: &str,
-        replacement: &str,
-    ) -> Result<FilePatcher, std::io::Error> {
+    pub fn new(path: PathBuf, query: &Query) -> Result<FilePatcher, std::io::Error> {
         let mut replacements = vec![];
         let file = File::open(&path)?;
         let reader = BufReader::new(file);
@@ -31,7 +28,8 @@ impl FilePatcher {
                 return Err(io_error);
             }
             let line = line.unwrap();
-            let new_line = line_patcher::patch(&line, pattern, replacement);
+            let line_patcher = LinePatcher::new(&line);
+            let new_line = line_patcher.replace(&query);
             if new_line != line {
                 let replacement = Replacement {
                     line_no: num + 1,
@@ -108,12 +106,14 @@ impl Replacement {
 mod tests {
     extern crate tempdir;
     use super::*;
+    use query;
     use std::fs;
 
     #[test]
     fn test_compute_replacements() {
         let top_path = std::path::Path::new("tests/data/top.txt");
-        let file_patcher = FilePatcher::new(top_path.to_path_buf(), "old", "new").unwrap();
+        let file_patcher =
+            FilePatcher::new(top_path.to_path_buf(), &query::substring("old", "new")).unwrap();
         let replacements = file_patcher.replacements();
         assert_eq!(replacements.len(), 1);
         let actual_replacement = &replacements[0];
@@ -127,7 +127,8 @@ mod tests {
         let temp_dir = tempdir::TempDir::new("test-replacer").unwrap();
         let file_path = temp_dir.path().join("foo.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line\n").unwrap();
-        let file_patcher = FilePatcher::new(file_path.to_path_buf(), "old", "new").unwrap();
+        let file_patcher =
+            FilePatcher::new(file_path.to_path_buf(), &query::substring("old", "new")).unwrap();
         file_patcher.run().unwrap();
         let actual = fs::read_to_string(&file_path).unwrap();
         let expected = "first line\nI say: new is nice\nlast line\n";
@@ -136,6 +137,8 @@ mod tests {
 
     #[test]
     fn test_replacement_display() {
+        // This test cannot fail. It's just here so you can tweak the look and feel
+        // of replacer easily.
         let replacement = Replacement {
             line_no: 1,
             old: "trustchain_creation: 0".to_owned(),

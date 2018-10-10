@@ -1,8 +1,11 @@
-use errors::Error;
-use file_patcher::FilePatcher;
 use ignore;
+
+use errors::Error;
 use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
+
+use file_patcher::FilePatcher;
+use query::Query;
 
 pub struct DirectoryPatcher {
     path: PathBuf,
@@ -17,8 +20,8 @@ impl DirectoryPatcher {
         }
     }
 
-    pub fn patch(&self, pattern: &str, replacement: &str) -> Result<(), Error> {
-        self.walk(pattern, replacement)?;
+    pub fn patch(&self, query: Query) -> Result<(), Error> {
+        self.walk(query)?;
         Ok(())
     }
 
@@ -26,8 +29,8 @@ impl DirectoryPatcher {
         self.dry_run = dry_run
     }
 
-    pub fn patch_file(&self, entry: &Path, pattern: &str, replacement: &str) -> Result<(), Error> {
-        let file_patcher = FilePatcher::new(entry.to_path_buf(), pattern, replacement);
+    pub fn patch_file(&self, entry: &Path, query: &Query) -> Result<(), Error> {
+        let file_patcher = FilePatcher::new(entry.to_path_buf(), &query);
         if let Err(err) = &file_patcher {
             match err.kind() {
                 // Just ignore binay or non-utf8 files
@@ -50,13 +53,13 @@ impl DirectoryPatcher {
         Ok(())
     }
 
-    fn walk(&self, pattern: &str, replacement: &str) -> Result<(), Error> {
+    fn walk(&self, query: Query) -> Result<(), Error> {
         for result in ignore::Walk::new(&self.path) {
             match result {
                 Ok(entry) => {
                     if let Some(file_type) = entry.file_type() {
                         if file_type.is_file() {
-                            self.patch_file(&entry.path(), pattern, replacement)?;
+                            self.patch_file(&entry.path(), &query)?;
                         }
                     }
                 }

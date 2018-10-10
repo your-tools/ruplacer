@@ -1,10 +1,12 @@
 extern crate ruplacer;
 extern crate tempdir;
-use ruplacer::DirectoryPatcher;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use tempdir::TempDir;
+
+use ruplacer::query;
+use ruplacer::DirectoryPatcher;
 
 fn setup_test(tmp_dir: &TempDir) -> PathBuf {
     let tmp_path = tmp_dir.path();
@@ -30,12 +32,12 @@ fn assert_not_replaced(path: &Path) {
 
 #[test]
 fn test_replace_old_by_new() {
-    let tmp_dir = TempDir::new("test-replacer").expect("failed to create temp dir");
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
 
     let directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
     directory_patcher
-        .patch("old", "new")
+        .patch(query::substring("old", "new"))
         .expect("replacer failed");
 
     let top_txt_path = data_path.join("top.txt");
@@ -54,7 +56,7 @@ fn test_dry_run() {
     let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
     directory_patcher.dry_run(true);
     directory_patcher
-        .patch("old", "new")
+        .patch(query::substring("old", "new"))
         .expect("replacer failed");
 
     let top_txt_path = data_path.join("top.txt");
@@ -68,7 +70,7 @@ fn test_with_gitignore() {
 
     let directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
     directory_patcher
-        .patch("old", "new")
+        .patch(query::substring("old", "new"))
         .expect("replacer failed");
 
     let ignored_path = data_path.join(".hidden/hidden.txt");
@@ -84,6 +86,6 @@ fn test_skip_non_utf8_files() {
 
     let directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
     directory_patcher
-        .patch("old", "new")
+        .patch(query::substring("old", "new"))
         .expect("replacer failed");
 }
