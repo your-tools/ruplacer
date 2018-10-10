@@ -3,6 +3,17 @@ Ruplacer
 
 Replace text in files
 
+Installation
+-------------
+
+Install `rust` and `cargo`, for example with [rustup](https://rustup.rs/)
+
+Then run:
+
+```
+cargo install ruplacer
+```
+
 Usage
 ------
 
