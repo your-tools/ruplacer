@@ -69,6 +69,7 @@ impl FilePatcher {
             replacement.print_self();
             print!("\n");
         }
+        print!("\n");
     }
 }
 
