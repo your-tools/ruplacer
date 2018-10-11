@@ -3,6 +3,7 @@ extern crate colored;
 extern crate difference;
 extern crate regex;
 mod errors;
+pub use errors::Error;
 pub mod query;
 mod line_patcher;
 mod file_patcher;
