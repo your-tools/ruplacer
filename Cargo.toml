@@ -7,7 +7,7 @@ license = "BSD-3-Clause"
 readme = "README.md"
 
 
-keywords = ["replacer", "find", "grep", "command", "line"]
+keywords = ["ruplacer", "find", "grep", "command", "line"]
 categories = ["command-line-utilities"]
 
 repository = "https://github.com/TankerApp/ruplacer"
@@ -17,6 +17,8 @@ difference = "2.0"
 ignore = "0.4"
 structopt = "0.2"
 colored = "1.6"
+regex = "1"
+isatty = "0.1"
 
 
 [dev-dependencies]
