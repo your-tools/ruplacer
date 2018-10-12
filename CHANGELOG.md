@@ -1,3 +1,8 @@
+# 0.2.2
+
+* Implement --subvert option to handle snake_case, CamelCase and so on. Fix #8.
+
+
 # 0.2.1
 
 * In case binary or non-UTF-8 files are found in the path, just skip them instead of

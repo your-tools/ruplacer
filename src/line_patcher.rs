@@ -1,7 +1,24 @@
+use inflector::cases::camelcase::*;
+use inflector::cases::kebabcase::*;
+use inflector::cases::pascalcase::*;
+use inflector::cases::screamingsnakecase::*;
+use inflector::cases::snakecase::*;
 use query::Query;
 
 pub struct LinePatcher {
     input: String,
+}
+
+fn subvert_line(input: &str, pattern: &str, replacement: &str) -> String {
+    let res = input.replace(&to_camel_case(pattern), &to_camel_case(replacement));
+    let res = res.replace(&to_pascal_case(pattern), &to_pascal_case(replacement));
+    let res = res.replace(&to_snake_case(pattern), &to_snake_case(replacement));
+    let res = res.replace(&to_kebab_case(pattern), &to_kebab_case(replacement));
+    let res = res.replace(
+        &to_screaming_snake_case(pattern),
+        &to_screaming_snake_case(replacement),
+    );
+    res.to_string()
 }
 
 impl LinePatcher {
@@ -18,6 +35,7 @@ impl LinePatcher {
                 let res = re.replace_all(&self.input, replacement as &str);
                 res.to_string()
             }
+            Query::Subvert(pattern, replacement) => subvert_line(&self.input, pattern, replacement),
         }
     }
 }
@@ -42,5 +60,21 @@ mod tests {
         let input = "first second";
         let actual = LinePatcher::new(input).replace(&re_query);
         assert_eq!(actual, "second first");
+    }
+
+    #[test]
+    fn test_subvert_happy() {
+        let input = "foo_bar, FooBar, FOO_BAR and foo-bar";
+        let query = query::subvert("foo_bar", "spam_eggs");
+        let actual = LinePatcher::new(input).replace(&query);
+        assert_eq!(actual, "spam_eggs, SpamEggs, SPAM_EGGS and spam-eggs");
+    }
+
+    #[test]
+    fn test_subvert_inconsistent() {
+        let input = "foo_bar, FooBar, FOO_BAR and foo-bar";
+        let query = query::subvert("foo_bar", "SpamEggs");
+        let actual = LinePatcher::new(input).replace(&query);
+        assert_eq!(actual, "spam_eggs, SpamEggs, SPAM_EGGS and spam-eggs");
     }
 }
