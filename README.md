@@ -1,6 +1,7 @@
 # Ruplacer
 
 <a href="https://crates.io/crates/ruplacer"><img src="https://img.shields.io/crates/v/ruplacer.svg"/></a>
+[![Build](https://img.shields.io/travis/SuperTanker/ruplacer.svg?branch=master)](https://travis-ci.org/SuperTanker/ruplacer)
 
 
 Replace text in files
