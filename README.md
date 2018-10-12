@@ -26,8 +26,9 @@ If path is not given, it defaults to the current working directory.
 
 Ruplacer will then walk through every file in `<path>`, while honoring `.gitignore` files found on the way.
 
-Then for every file, it will read the contents, replace all lines matching the pattern by the replacement, and print the
-difference:
+Binary files and text files containing non-UTF8 characters will be skipped. Then for
+every remaining file, it will read the contents, replace all lines matching the
+pattern by the replacement, and print the difference:
 
 ```
 $ replacer old new src/
