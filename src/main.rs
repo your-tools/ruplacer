@@ -46,6 +46,12 @@ struct Opt {
     fixed_string: bool,
 
     #[structopt(
+        long = "--subvert",
+        help = "Replace all variants of the pattern (snake_case, CamelCase and so on)"
+    )]
+    subvert: bool,
+
+    #[structopt(
         long = "--color",
         help = "Wether to enable colorful output. Choose between 'always', 'auto', or 'never'. Default is 'auto'"
     )]
@@ -94,11 +100,15 @@ fn main() {
 
     let path = opt.path;
     let path = path.unwrap_or(Path::new(".").to_path_buf());
+
     let query = if opt.fixed_string {
         ruplacer::query::substring(&opt.pattern, &opt.replacement)
+    } else if opt.subvert {
+        ruplacer::query::subvert(&opt.pattern, &opt.replacement)
     } else {
         regex_query_or_die(&opt.pattern, &opt.replacement)
     };
+
     let mut directory_patcher = ruplacer::DirectoryPatcher::new(path);
     directory_patcher.dry_run(dry_run);
     let outcome = directory_patcher.patch(query);
