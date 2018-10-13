@@ -35,7 +35,7 @@ fn test_replace_old_by_new() {
     let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
 
-    let directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
+    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
     directory_patcher
         .patch(query::substring("old", "new"))
         .expect("ruplacer failed");
@@ -46,6 +46,19 @@ fn test_replace_old_by_new() {
     // Also check recursion inside the data dir:
     let foo_path = data_path.join("a_dir/sub/foo.txt");
     assert_replaced(&foo_path);
+}
+
+#[test]
+fn test_stats() {
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+
+    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
+
+    directory_patcher.patch(query::substring("old", "new")).expect("ruplacer failed");
+    let stats = directory_patcher.stats();
+    assert_eq!(stats.matching_files, 2);
+    assert_eq!(stats.num_replacements, 3);
 }
 
 #[test]
@@ -68,7 +81,7 @@ fn test_with_gitignore() {
     let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
 
-    let directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
+    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
     directory_patcher
         .patch(query::substring("old", "new"))
         .expect("ruplacer failed");
@@ -84,7 +97,7 @@ fn test_skip_non_utf8_files() {
     let bin_path = data_path.join("foo.latin1");
     fs::write(bin_path, b"caf\xef\n").unwrap();
 
-    let directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
+    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
     directory_patcher
         .patch(query::substring("old", "new"))
         .expect("ruplacer failed");

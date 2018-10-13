@@ -74,7 +74,7 @@ fn regex_query_or_die(pattern: &str, replacement: &str) -> ruplacer::query::Quer
     ruplacer::query::from_regex(re, replacement)
 }
 
-// Just set proper env variable so that the colored crates
+// Set proper env variable so that the colored crates
 // behaves properly.
 // See: https://bixense.com/clicolors/
 fn configure_color(when: ColorWhen) {
@@ -89,6 +89,15 @@ fn configure_color(when: ColorWhen) {
             }
         }
     }
+}
+
+fn print_stats(stats: ruplacer::Stats, dry_run: bool) {
+    if dry_run {
+        print!("Would perform ")
+    } else {
+        print!("Performed ")
+    }
+    println!("{} replacements on {} matching files", stats.num_replacements, stats.matching_files)
 }
 
 fn main() {
@@ -115,5 +124,11 @@ fn main() {
     if let Err(err) = outcome {
         eprintln!("{}", err);
         process::exit(1);
+    }
+
+    let stats = directory_patcher.stats();
+    print_stats(stats, dry_run);
+    if dry_run {
+        println!("Re-run ruplacer with --go to write these changes to disk");
     }
 }
