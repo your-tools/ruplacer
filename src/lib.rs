@@ -10,3 +10,4 @@ mod line_patcher;
 mod file_patcher;
 mod directory_patcher;
 pub use directory_patcher::DirectoryPatcher;
+pub use directory_patcher::Stats;
