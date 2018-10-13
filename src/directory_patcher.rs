@@ -6,19 +6,8 @@ use std::path::{Path, PathBuf};
 
 use file_patcher::FilePatcher;
 use query::Query;
+use stats::Stats;
 
-#[derive(Default)]
-pub struct Stats {
-    pub matching_files: usize,
-    pub num_replacements: usize,
-}
-
-impl Stats {
-    pub fn update(&mut self, num_replacements: usize) {
-        self.matching_files +=1;
-        self.num_replacements += num_replacements;
-    }
-}
 
 pub struct DirectoryPatcher {
     path: PathBuf,
