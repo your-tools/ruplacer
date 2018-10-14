@@ -2,7 +2,7 @@
 name = "ruplacer"
 version = "0.2.2"
 authors = ["Dimitri Merejkowsky <d.merej@gmail.com>"]
-description = "Find and replace text in files"
+description = "Find and replace text in source files"
 license = "BSD-3-Clause"
 readme = "README.md"
 

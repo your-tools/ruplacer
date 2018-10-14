@@ -4,7 +4,7 @@
 [![Build](https://img.shields.io/travis/SuperTanker/ruplacer.svg?branch=master)](https://travis-ci.org/SuperTanker/ruplacer)
 
 
-Replace text in files
+Find and replace text in source files.
 
 ## Installation
 
@@ -51,7 +51,7 @@ groups captures in `pattern` in `replacement`.
 For instance, to replace dates looking like `MM/DD/YYYY` to `YYYY-MM-DD`, you would use:
 
 ```
-ruplacer
+$ ruplacer '(\d{2})/(\d{2})/(\d{4})' '$3-$1-$2'
 ```
 
 ## Customizing the replacement algorithm
