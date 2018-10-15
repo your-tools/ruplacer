@@ -1,8 +1,10 @@
 # 0.2.3
 
-Before exiting, print a helpful message containing stats about replacement and hint about
-using `--go` to actually write the changes to disk.
+* Before exiting, print a helpful message containing stats about replacement and hint about using `--go` to actually write the changes to disk.
 
+* Tweak ruplacer output
+
+* Print error and exit with error code 2 if no replacement was made
 
 # 0.2.2
 
