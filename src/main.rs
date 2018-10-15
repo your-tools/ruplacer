@@ -2,10 +2,13 @@
 extern crate structopt;
 extern crate isatty;
 extern crate regex;
+extern crate colored;
+
 use isatty::stdout_isatty;
 use std::path::{Path, PathBuf};
 use std::process;
 use structopt::StructOpt;
+use colored::*;
 
 extern crate ruplacer;
 
@@ -67,7 +70,7 @@ struct Opt {
 fn regex_query_or_die(pattern: &str, replacement: &str) -> ruplacer::query::Query {
     let re = regex::Regex::new(pattern);
     if let Err(e) = re {
-        eprintln!("Invalid regex: {}: {}", pattern, e);
+        eprintln!("{}: {}", "Invalid regex".bold().red(), e);
         process::exit(1);
     }
     let re = re.unwrap();
@@ -97,7 +100,7 @@ fn print_stats(stats: ruplacer::Stats, dry_run: bool) {
     } else {
         print!("Performed ")
     }
-    println!("{} replacements on {} matching files", stats.num_replacements, stats.matching_files)
+    println!("{}", stats)
 }
 
 fn main() {
@@ -122,11 +125,15 @@ fn main() {
     directory_patcher.dry_run(dry_run);
     let outcome = directory_patcher.patch(query);
     if let Err(err) = outcome {
-        eprintln!("{}", err);
+        eprintln!("{}: {}", "Error".bold().red(), err);
         process::exit(1);
     }
 
     let stats = directory_patcher.stats();
+    if stats.num_replacements == 0 {
+        eprintln!("{}: {}", "Error".bold().red(), "nothing found to replace");
+        process::exit(2);
+    }
     print_stats(stats, dry_run);
     if dry_run {
         println!("Re-run ruplacer with --go to write these changes to disk");

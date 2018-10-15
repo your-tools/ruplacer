@@ -15,7 +15,7 @@ impl Error {
 
     pub fn from_read_error(path: &std::path::Path, io_error: &std::io::Error) -> Result<(), Error> {
         let path = path.to_string_lossy();
-        let message = format!("Error when reading {}: {}", path, io_error);
+        let message = format!("When reading {}: {}", path, io_error);
         Err(Error::new(&message))
     }
 
@@ -24,7 +24,7 @@ impl Error {
         io_error: &std::io::Error,
     ) -> Result<(), Error> {
         let path = path.to_string_lossy();
-        let message = format!("Error when writing {}: {}", path, io_error);
+        let message = format!("When writing {}: {}", path, io_error);
         Err(Error::new(&message))
     }
 }
@@ -43,6 +43,6 @@ impl From<std::io::Error> for Error {
 
 impl From<ignore::Error> for Error {
     fn from(error: ignore::Error) -> Error {
-        Error::new(&format!("Error when parsing .ignore files: {}", error))
+        Error::new(&format!("When walking files: {}", error))
     }
 }
