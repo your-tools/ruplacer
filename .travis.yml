@@ -4,7 +4,23 @@ rust:
   - stable
   - nightly
 
-
 script:
-  - cargo build
-  - cargo test
+  - cargo build --release
+  - cargo test --release
+
+
+before_deploy:
+ - python3 gen_artifacts.py --version $TRAVIS_TAG --platform linux-x86_64
+
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    secure: TQhUDQodAb3mM09q2QtrV7KF3lPlcTb3r8bL4qvhMILmZEGTacEXENh8maA0crUa6x1a58gK2g07rMpaDiTWWv7Vm3SsvOmCcvYyr5/dP0rV5qbyKBxBmcvYqnDc+/pzX7kphDSzFHQjotarquajlAzyP26cYPmy7guw5sYGuMctRwK1MLrfBEmSQ9M6tbfeFnoah42RgjE087RomlCHLKirds+fTXBmApNSt+1fDx+wpF5g2inSRZ7wN0lU+NsO3xDqc0j1pWoh7ZTRCB4TOahdXu6OXu/0eXf+skDbHcOhpydegsoyFMIbxusWYk0oZdGMdSGoM4rep1Gabjd8DgHcrSHfJz9wgDI3D6T4Fzh5hilf/ewbmbJ5v3e7iP9hEzW+CsnyJjMBkWwunwXdb6eidgM1VZZJ8+RGu8+lM7tMMhJLwIJEs3YQtaXRkVVAkNeLsPiEvRuR7S8W5bjdwhS3x2ncl0VwDm8W+TjKiYL0lH4sR2M9hORXm57rVLxlqwOq92bDKI4MJGK4dxo/b3+YcusjRqpWNueJ8hwfti6rIBY5Q5/wN+KxiyIjhgmUTcIPmhJy4ewdXN41FNHhgRsJoPPPNtOklQqo+Jo3AqFjNz+X8Eg50GrK3sz84avhKyn7itBv+xaTgRv6v5/NU0X1RFCTAapDYyxhvKgTcvI=
+  file_glob: true
+  file: dist/*
+  on:
+    repo: SuperTanker/ruplacer
+    tags: true
+    branch: master
+    condition: $TRAVIS_RUST_VERSION = stable
