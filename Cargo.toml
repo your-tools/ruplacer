@@ -24,3 +24,6 @@ Inflector = "0.11"
 
 [dev-dependencies]
 tempdir = "0.3"
+
+[package.metadata.deb]
+extended-description = "Find and replace text in source files"

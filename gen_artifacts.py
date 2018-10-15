@@ -41,6 +41,11 @@ def make_archive(archive_path, *, platform):
     return res
 
 
+def generate_deb():
+    run("cargo", "install", "cargo-deb", "--force")
+    run("cargo", "deb")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--version", required=True)
@@ -60,6 +65,9 @@ def main():
     archive = make_archive(archive_path, platform=platform)
     # So that we can simply glob dist/* in .travis.yml
     shutil.move(archive,  dist_path)
+
+    if "linux" in platform:
+        generate_deb()
 
 
 if __name__ == "__main__":
