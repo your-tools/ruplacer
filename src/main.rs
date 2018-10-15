@@ -136,6 +136,6 @@ fn main() {
     }
     print_stats(stats, dry_run);
     if dry_run {
-        println!("Re-run ruplacer with --go to write these changes to disk");
+        println!("Re-run ruplacer with --go to write these changes to the filesystem");
     }
 }
