@@ -119,8 +119,14 @@ mod tests {
         assert_eq!(replacements.len(), 1);
         let actual_replacement = &replacements[0];
         assert_eq!(actual_replacement.line_no, 2);
-        assert_eq!(actual_replacement.new, "Top: new is nice");
-        assert_eq!(actual_replacement.old, "Top: old is nice");
+        // ruplacer preserves line endings: on Windows, there is a
+        // possibility the actual lines contain \r, depending
+        // of the git configuration.
+        // So strip the \r before comparing them to the expected result.
+        let actual_new = actual_replacement.new.replace("\r", "");
+        let actual_old = actual_replacement.old.replace("\r", "");
+        assert_eq!(actual_new, "Top: new is nice");
+        assert_eq!(actual_old, "Top: old is nice");
     }
 
     #[test]
