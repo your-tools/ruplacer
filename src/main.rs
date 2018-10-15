@@ -1,14 +1,14 @@
 #[macro_use]
 extern crate structopt;
+extern crate colored;
 extern crate isatty;
 extern crate regex;
-extern crate colored;
 
+use colored::*;
 use isatty::stdout_isatty;
 use std::path::{Path, PathBuf};
 use std::process;
 use structopt::StructOpt;
-use colored::*;
 
 extern crate ruplacer;
 

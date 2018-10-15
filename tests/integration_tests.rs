@@ -55,7 +55,9 @@ fn test_stats() {
 
     let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
 
-    directory_patcher.patch(query::substring("old", "new")).expect("ruplacer failed");
+    directory_patcher
+        .patch(query::substring("old", "new"))
+        .expect("ruplacer failed");
     let stats = directory_patcher.stats();
     assert_eq!(stats.matching_files, 2);
     assert_eq!(stats.num_replacements, 3);
