@@ -1,3 +1,7 @@
+# 0.2.4
+
+* Rename `--fixed-strings` option to `--no-regex`
+
 # 0.2.3
 
 * Before exiting, print a helpful message containing stats about replacement and hint about using `--go` to actually write the changes to disk.
@@ -9,7 +13,6 @@
 # 0.2.2
 
 * Implement --subvert option to handle snake_case, CamelCase and so on. Fix #8.
-
 
 # 0.2.1
 
