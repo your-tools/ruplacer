@@ -56,7 +56,7 @@ $ ruplacer '(\d{2})/(\d{2})/(\d{4})' '$3-$1-$2'
 
 ## Customizing the replacement algorithm
 
-* Use `--fixed-string` to prevent `ruplacer` from interpreting the pattern as a regex.
+* Use `--no-regex` to prevent `ruplacer` from interpreting the pattern as a regex.
 * Use `--subvert` to perform replacements across a variety of case styles:
 
 ```

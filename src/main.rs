@@ -44,9 +44,9 @@ struct Opt {
     pattern: String,
 
     #[structopt(
-        long = "--fixed-strings", help = "Interpret pattern as a a raw string. Default is: regex"
+        long = "--no-regex", help = "Interpret pattern as a a raw string. Default is: regex"
     )]
-    fixed_string: bool,
+    no_regex: bool,
 
     #[structopt(
         long = "--subvert",
@@ -77,8 +77,7 @@ fn regex_query_or_die(pattern: &str, replacement: &str) -> ruplacer::query::Quer
     ruplacer::query::from_regex(re, replacement)
 }
 
-// Set proper env variable so that the colored crates
-// behaves properly.
+// Set proper env variable so that the colored crate behaves properly.
 // See: https://bixense.com/clicolors/
 fn configure_color(when: ColorWhen) {
     match when {
@@ -113,7 +112,7 @@ fn main() {
     let path = opt.path;
     let path = path.unwrap_or(Path::new(".").to_path_buf());
 
-    let query = if opt.fixed_string {
+    let query = if opt.no_regex {
         ruplacer::query::substring(&opt.pattern, &opt.replacement)
     } else if opt.subvert {
         ruplacer::query::subvert(&opt.pattern, &opt.replacement)
