@@ -6,15 +6,32 @@
 
 Find and replace text in source files.
 
-## Installation
+![ruplacer screenshot](https://dmerej.info/blog/pics/ruplacer.png)
 
-Install `rust` and `cargo`, for example with [rustup](https://rustup.rs/)
+## Installing with cargo
+
+Install `rust` and `cargo`, for example with [rustup](https://rustup.rs/).
 
 Then run:
 
 ```
 cargo install ruplacer
 ```
+
+## Alternative installation methods
+
+* Pre-compiled binaries for Linux and macOS are available as [assests of the latest release](
+https://github.com/SuperTanker/ruplacer/releases/tag/v0.2.4).
+
+* `ruplacer` can also be installed from `homebrew`:
+
+```
+$ brew install supertanker/homebrew-repo/ruplacer
+```
+
+* `ruplacer` is also on [the Arch Linux User Repository](https://aur.archlinux.org/packages/ruplacer/)
+
+Windows binaries are coming soon.
 
 ## Basic usage
 
