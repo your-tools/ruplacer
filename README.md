@@ -62,7 +62,7 @@ If you are OK with the replacements, re-run `ruplacer` with the `--go` option to
 
 By default, `pattern` will be compiled into a [Rust regex](https://docs.rs/regex/1.0.5/regex/).
 
-Not that it's slightly different from Perl-style regular expressions. Also, you must use `$1`, `$2` to reference
+Note that it's slightly different from Perl-style regular expressions. Also, you must use `$1`, `$2` to reference
 groups captures in `pattern` in `replacement`.
 
 For instance, to replace dates looking like `MM/DD/YYYY` to `YYYY-MM-DD`, you would use:
