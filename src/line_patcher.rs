@@ -29,13 +29,17 @@ impl LinePatcher {
     }
 
     pub fn replace(&self, query: &Query) -> String {
+        #[cfg_attr(rustfmt, rustfmt_skip)]
         match query {
-            Query::Substring(old, new) => self.input.replace(old, new),
-            Query::Regex(re, replacement) => {
-                let res = re.replace_all(&self.input, replacement as &str);
-                res.to_string()
+            Query::Substring(old, new) => {
+                self.input.replace(old, new)
             }
-            Query::Subvert(pattern, replacement) => subvert_line(&self.input, pattern, replacement),
+            Query::Regex(re, replacement) => {
+                re.replace_all(&self.input, replacement as &str).to_string()
+            }
+            Query::Subvert(pattern, replacement) => {
+                subvert_line(&self.input, pattern, replacement)
+            }
         }
     }
 }
