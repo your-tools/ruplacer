@@ -1,3 +1,7 @@
+# 0.2.5
+
+Deploy Windows pre-compiled binaries as assets.
+
 # 0.2.4
 
 * Rename `--fixed-strings` option to `--no-regex`
