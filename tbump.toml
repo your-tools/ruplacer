@@ -20,6 +20,11 @@ tag_template = "v{new_version}"
 [[file]]
 src = "Cargo.toml"
 
+[[file]]
+src = "README.md"
+search = "releases/tag/v{current_version}"
+
+
 [[before_push]]
 name = "run tests"
 cmd = "cargo test"
