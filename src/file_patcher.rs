@@ -1,9 +1,10 @@
-use colored::*;
-use difference::{Changeset, Difference};
 use std;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
+
+use colored::*;
+use diff;
 
 use line_patcher::LinePatcher;
 use query::Query;
@@ -82,21 +83,21 @@ pub struct Replacement {
 
 impl Replacement {
     fn print_self(&self) {
-        let changeset = Changeset::new(&self.old, &self.new, "");
+        let diff = diff::chars(&self.old, &self.new);
         print!("{} ", "--".red());
-        for diff in &changeset.diffs {
-            match diff {
-                Difference::Same(s) => print!("{}", s),
-                Difference::Rem(s) => print!("{}", s.red().underline()),
+        for diff_result in &diff {
+            match diff_result {
+                diff::Result::Both(a, _) => print!("{}", a),
+                diff::Result::Left(c) => print!("{}", c.to_string().red().underline()),
                 _ => (),
             }
         }
         print!("\n");
         print!("{} ", "++".green());
-        for diff in &changeset.diffs {
-            match diff {
-                Difference::Same(s) => print!("{}", s),
-                Difference::Add(s) => print!("{}", s.green().underline()),
+        for diff_result in &diff {
+            match diff_result {
+                diff::Result::Both(a, _) => print!("{}", a),
+                diff::Result::Right(c) => print!("{}", c.to_string().green().underline()),
                 _ => (),
             }
         }

@@ -1,5 +1,5 @@
 extern crate colored;
-extern crate difference;
+extern crate diff;
 extern crate ignore;
 extern crate inflector;
 extern crate regex;
