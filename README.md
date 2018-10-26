@@ -1,7 +1,7 @@
 # Ruplacer
 
 <a href="https://crates.io/crates/ruplacer"><img src="https://img.shields.io/crates/v/ruplacer.svg"/></a>
-[![Build](https://img.shields.io/travis/SuperTanker/ruplacer.svg?branch=master)](https://travis-ci.org/SuperTanker/ruplacer)
+[![Build](https://img.shields.io/travis/TankerHQ/ruplacer.svg?branch=master)](https://travis-ci.org/TankerHQ/ruplacer)
 
 
 Find and replace text in source files.
@@ -21,12 +21,12 @@ cargo install ruplacer
 ## Alternative installation methods
 
 * Pre-compiled binaries for Linux, macOS, and Windows are available as [assests of the latest release](
-https://github.com/SuperTanker/ruplacer/releases/tag/v0.2.5).
+https://github.com/TankerHQ/ruplacer/releases/tag/v0.2.5).
 
 * `ruplacer` can also be installed from `homebrew`:
 
 ```
-$ brew install supertanker/homebrew-repo/ruplacer
+$ brew install TankerHQ/homebrew-repo/ruplacer
 ```
 
 * `ruplacer` is also on [the Arch Linux User Repository](https://aur.archlinux.org/packages/ruplacer/)
