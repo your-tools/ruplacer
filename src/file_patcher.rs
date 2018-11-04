@@ -5,8 +5,8 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
-use crate::line_patcher::LinePatcher;
-use crate::query::Query;
+use line_patcher::LinePatcher;
+use query::Query;
 
 pub struct FilePatcher {
     replacements: Vec<Replacement>,
@@ -107,7 +107,7 @@ impl Replacement {
 mod tests {
     extern crate tempdir;
     use super::*;
-    use crate::query;
+    use query;
     use std::fs;
 
     #[test]
