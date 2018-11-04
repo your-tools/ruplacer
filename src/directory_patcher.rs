@@ -1,12 +1,12 @@
 use ignore;
 
-use errors::Error;
+use crate::errors::Error;
 use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
 
-use file_patcher::FilePatcher;
-use query::Query;
-use stats::Stats;
+use crate::file_patcher::FilePatcher;
+use crate::query::Query;
+use crate::stats::Stats;
 
 pub struct DirectoryPatcher {
     path: PathBuf,
