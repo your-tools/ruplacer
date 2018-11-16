@@ -80,15 +80,15 @@ This makes it possible to look for special characters without escaping them:
 
 ```
 # This is a regex that matches the letter a
-# or the letter u
-$ ruplacer (a|o) u
+# or the letter o
+$ ruplacer '(a|o)' u
 - tata toto
 + tutu tutu
 - (a|o)
 + (u|u)
 
 # This is the literal string: '(a|o)'
-$ ruplacer --no-regex (a|o) u
+$ ruplacer --no-regex '(a|o)' u
 # or
 $ ruplacer '\(a\|o|)' u
 - (a|o)

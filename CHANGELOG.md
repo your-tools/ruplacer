@@ -1,3 +1,7 @@
+# 0.2.6
+
+* Improve README and `--help` message.
+
 # 0.2.5
 
 Deploy Windows pre-compiled binaries as assets.

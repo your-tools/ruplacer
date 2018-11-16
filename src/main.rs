@@ -1,7 +1,7 @@
-extern crate structopt;
 extern crate colored;
 extern crate isatty;
 extern crate regex;
+extern crate structopt;
 
 use colored::*;
 use isatty::stdout_isatty;
@@ -34,7 +34,20 @@ impl std::str::FromStr for ColorWhen {
 }
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "ruplacer")]
+#[structopt(
+    name = "ruplacer",
+    after_help = "
+EXAMPLES:
+    Replace 'foo' with 'bar'
+    $ ruplacer foo bar
+
+    Replace 'LastName, FirstName' with 'FirstName LastName'
+    $ ruplacer '(\\w)+, (\\w)+' '$2 $1'
+
+    Replace 'FooBar' with 'SpamEggs', 'foo_bar' with 'spam_eggs', ...
+    $ ruplacer --subvert FooBar SpamEggs
+"
+)]
 struct Opt {
     #[structopt(long = "go")]
     go: bool,
