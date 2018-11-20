@@ -1,3 +1,7 @@
+# 0.2.7
+
+* Fix deployment
+
 # 0.2.6
 
 * Improve README and `--help` message.

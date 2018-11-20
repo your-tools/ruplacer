@@ -32,7 +32,7 @@ deploy:
     - dist/*
     - target/debian/*.deb
   on:
-    repo: SuperTanker/ruplacer
+    repo: TankerHQ/ruplacer
     tags: true
     branch: master
     condition: $TRAVIS_RUST_VERSION = stable
