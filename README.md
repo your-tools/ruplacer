@@ -58,21 +58,48 @@ Patching src/top.txt
 
 If you are OK with the replacements, re-run `ruplacer` with the `--go` option to actually write the files.
 
+## Regex
+
 By default, `pattern` will be compiled into a [Rust regex](https://docs.rs/regex/1.0.5/regex/).
 
 Note that it's slightly different from Perl-style regular expressions. Also, you must use `$1`, `$2` to reference
 groups captured from `pattern` inside `replacement`.
 
-For instance, to replace dates looking like `MM/DD/YYYY` to `YYYY-MM-DD`, you would use:
+For instance, this replaces 'last, first' by 'first last':
 
 ```
-$ ruplacer '(\d{2})/(\d{2})/(\d{4})' '$3-$1-$2'
+$ ruplacer '(\w)+, (\w)+' '$2 $1'
 ```
 
-## Customizing the replacement algorithm
+(note the use of single quotes to avoid any processing by the shell)
 
-* Use `--no-regex` to prevent `ruplacer` from interpreting the pattern as a regex.
-* Use `--subvert` to perform replacements across a variety of case styles:
+
+If you don't want the pattern to be used as a regex, use the `--no-regex` command line flag.
+
+This makes it possible to look for special characters without escaping them:
+
+```
+# This is a regex that matches the letter a
+# or the letter o
+$ ruplacer '(a|o)' u
+- tata toto
++ tutu tutu
+- (a|o)
++ (u|u)
+
+# This is the literal string: '(a|o)'
+$ ruplacer --no-regex '(a|o)' u
+# or
+$ ruplacer '\(a\|o|)' u
+- (a|o)
++ u
+
+```
+
+
+## subvert mode
+
+Ruplacer has a `--subvert` option which works across a variety of case styles (lower case, snake case, and so on):
 
 ```
 $ ruplacer --subvert foo_bar spam_eggs
