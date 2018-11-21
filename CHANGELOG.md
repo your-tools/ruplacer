@@ -1,6 +1,6 @@
 # 0.2.7
 
-* Fix deployment
+* Fix deployment from travis
 
 # 0.2.6
 
