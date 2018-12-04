@@ -115,7 +115,7 @@ fn test_select_file_types() {
     fs::write(py_path, "a = 'this is old'\n").unwrap();
 
     let mut settings = Settings::default();
-    settings.selected_file_type = Some("py".to_string());
+    settings.selected_file_types = vec!["py".to_string()];
 
     let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), settings);
     directory_patcher
@@ -132,7 +132,7 @@ fn test_ignore_file_types() {
     let py_path = data_path.join("foo.py");
     fs::write(&py_path, "a = 'this is old'\n").unwrap();
     let mut settings = Settings::default();
-    settings.ignored_file_type = Some("py".to_string());
+    settings.ignored_file_types = vec!["py".to_string()];
     let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), settings);
     directory_patcher
         .patch(query::substring("old", "new"))
