@@ -25,8 +25,8 @@ impl DirectoryPatcher {
         }
     }
 
-    pub fn patch(&mut self, query: Query) -> Result<(), Error> {
-        self.walk(query)?;
+    pub fn patch(&mut self, query: &Query) -> Result<(), Error> {
+        self.walk(&query)?;
         Ok(())
     }
 
@@ -74,7 +74,7 @@ impl DirectoryPatcher {
         Ok(walk_builder.build())
     }
 
-    fn walk(&mut self, query: Query) -> Result<(), Error> {
+    fn walk(&mut self, query: &Query) -> Result<(), Error> {
         let walker = self.build_walker()?;
         for result in walker {
             match result {

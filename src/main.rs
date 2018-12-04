@@ -126,7 +126,7 @@ fn configure_color(when: &ColorWhen) {
     }
 }
 
-fn print_stats(stats: ruplacer::Stats, dry_run: bool) {
+fn print_stats(stats: &ruplacer::Stats, dry_run: bool) {
     if dry_run {
         print!("Would perform ")
     } else {
@@ -161,7 +161,7 @@ fn main() {
     configure_color(&color_when);
 
     let path = opt.path;
-    let path = path.unwrap_or(Path::new(".").to_path_buf());
+    let path = path.unwrap_or_else(|| Path::new(".").to_path_buf());
 
     #[cfg_attr(rustfmt, rustfmt_skip)]
     let Opt { pattern, replacement, .. } = opt;
@@ -181,7 +181,7 @@ fn main() {
         ignored_file_types,
     };
     let mut directory_patcher = ruplacer::DirectoryPatcher::new(path, settings);
-    let outcome = directory_patcher.patch(query);
+    let outcome = directory_patcher.patch(&query);
     if let Err(err) = outcome {
         eprintln!("{}: {}", "Error".bold().red(), err);
         process::exit(1);
@@ -192,7 +192,7 @@ fn main() {
         eprintln!("{}: {}", "Error".bold().red(), "nothing found to replace");
         process::exit(2);
     }
-    print_stats(stats, dry_run);
+    print_stats(&stats, dry_run);
     if dry_run {
         println!("Re-run ruplacer with --go to write these changes to the filesystem");
     }
