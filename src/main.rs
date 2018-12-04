@@ -55,6 +55,12 @@ struct Opt {
     #[structopt(help = "The pattern to search for")]
     pattern: String,
 
+    #[structopt(help = "The replacement")]
+    replacement: String,
+
+    #[structopt(parse(from_os_str), help = "The source path. Defaults to the working directory")]
+    path: Option<PathBuf>,
+
     #[structopt(
         long = "--no-regex", help = "Interpret pattern as a a raw string. Default is: regex"
     )]
@@ -74,12 +80,6 @@ struct Opt {
         help = "Wether to enable colorful output. Choose between 'always', 'auto', or 'never'. Default is 'auto'"
     )]
     color_when: Option<ColorWhen>,
-
-    #[structopt(help = "The replacement")]
-    replacement: String,
-
-    #[structopt(parse(from_os_str), help = "The source path. Defaults to the working directory")]
-    path: Option<PathBuf>,
 }
 
 fn regex_query_or_die(pattern: &str, replacement: &str) -> ruplacer::query::Query {
@@ -127,12 +127,14 @@ fn main() {
     let path = opt.path;
     let path = path.unwrap_or(Path::new(".").to_path_buf());
 
+    #[cfg_attr(rustfmt, rustfmt_skip)]
+    let Opt { pattern, replacement, .. } = opt;
     let query = if opt.no_regex {
-        ruplacer::query::substring(&opt.pattern, &opt.replacement)
+        ruplacer::query::substring(&pattern, &replacement)
     } else if opt.subvert {
-        ruplacer::query::subvert(&opt.pattern, &opt.replacement)
+        ruplacer::query::subvert(&pattern, &replacement)
     } else {
-        regex_query_or_die(&opt.pattern, &opt.replacement)
+        regex_query_or_die(&pattern, &replacement)
     };
 
     let settings = ruplacer::Settings {
