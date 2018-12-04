@@ -62,8 +62,11 @@ impl DirectoryPatcher {
     fn build_walker(&self) -> Result<ignore::Walk, Error> {
         let mut types_builder = ignore::types::TypesBuilder::new();
         types_builder.add_defaults();
-        if let Some(selected_type) = &self.settings.file_type {
+        if let Some(selected_type) = &self.settings.selected_file_type {
             types_builder.select(&selected_type);
+        }
+        if let Some(ignored_type) = &self.settings.ignored_file_type {
+            types_builder.negate(&ignored_type);
         }
         let types_matcher = types_builder.build()?;
         let mut walk_builder = ignore::WalkBuilder::new(&self.path);

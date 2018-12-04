@@ -73,7 +73,10 @@ struct Opt {
     subvert: bool,
 
     #[structopt(short = "t", long = "type", help = "Only search files matching <file_type>")]
-    file_type: Option<String>,
+    selected_file_type: Option<String>,
+
+    #[structopt(short = "T", long = "type-not", help = "Ignore files matching <file_type>")]
+    ignored_file_type: Option<String>,
 
     #[structopt(long = "type-list", help = "List the known file types")]
     file_type_list: bool,
@@ -153,9 +156,12 @@ fn main() {
         regex_query_or_die(&pattern, &replacement)
     };
 
+    #[cfg_attr(rustfmt, rustfmt_skip)]
+    let Opt { selected_file_type, ignored_file_type, .. } = opt;
     let settings = ruplacer::Settings {
         dry_run,
-        file_type: opt.file_type,
+        selected_file_type,
+        ignored_file_type,
     };
     let mut directory_patcher = ruplacer::DirectoryPatcher::new(path, settings);
     let outcome = directory_patcher.patch(query);

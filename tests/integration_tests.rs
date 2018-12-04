@@ -108,14 +108,14 @@ fn test_skip_non_utf8_files() {
 }
 
 #[test]
-fn test_file_type() {
+fn test_select_file_types() {
     let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
     let py_path = data_path.join("foo.py");
     fs::write(py_path, "a = 'this is old'\n").unwrap();
 
     let mut settings = Settings::default();
-    settings.file_type = Some("py".to_string());
+    settings.selected_file_type = Some("py".to_string());
 
     let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), settings);
     directory_patcher
@@ -123,4 +123,19 @@ fn test_file_type() {
         .expect("ruplacer failed");
     let stats = directory_patcher.stats();
     assert_eq!(stats.matching_files, 1);
+}
+
+#[test]
+fn test_ignore_file_types() {
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+    let py_path = data_path.join("foo.py");
+    fs::write(&py_path, "a = 'this is old'\n").unwrap();
+    let mut settings = Settings::default();
+    settings.ignored_file_type = Some("py".to_string());
+    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), settings);
+    directory_patcher
+        .patch(query::substring("old", "new"))
+        .expect("ruplacer failed");
+    assert_not_replaced(&py_path);
 }
