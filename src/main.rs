@@ -135,17 +135,22 @@ fn print_stats(stats: ruplacer::Stats, dry_run: bool) {
     println!("{}", stats)
 }
 
+fn on_type_list() {
+    println!("Known file types:");
+    let mut types_builder = ignore::types::TypesBuilder::new();
+    types_builder.add_defaults();
+    for def in types_builder.definitions() {
+        let name = def.name();
+        let globs = def.globs();
+        println!("{}: {}", name.bold(), globs.join(", "));
+    }
+    return;
+}
+
 fn main() {
     let args: Vec<_> = std::env::args().collect();
     if args.contains(&"--type-list".to_string()) {
-        println!("Known file types:");
-        let mut types_builder = ignore::types::TypesBuilder::new();
-        types_builder.add_defaults();
-        for def in types_builder.definitions() {
-            let name = def.name();
-            let globs = def.globs();
-            println!("{}: {}", name.bold(), globs.join(", "));
-        }
+        on_type_list();
         return;
     }
 
