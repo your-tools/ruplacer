@@ -75,6 +75,9 @@ struct Opt {
     #[structopt(short = "t", long = "type", help = "Only search files matching <file_type>")]
     file_type: Option<String>,
 
+    #[structopt(long = "type-list", help = "List the known file types")]
+    file_type_list: bool,
+
     #[structopt(
         long = "--color",
         help = "Wether to enable colorful output. Choose between 'always', 'auto', or 'never'. Default is 'auto'"
@@ -118,6 +121,19 @@ fn print_stats(stats: ruplacer::Stats, dry_run: bool) {
 }
 
 fn main() {
+    let args: Vec<_> = std::env::args().collect();
+    if args.contains(&"--type-list".to_string()) {
+        println!("Known file types:");
+        let mut types_builder = ignore::types::TypesBuilder::new();
+        types_builder.add_defaults();
+        for def in types_builder.definitions() {
+            let name = def.name();
+            let globs = def.globs();
+            println!("{}: {}", name.bold(), globs.join(", "));
+        }
+        return;
+    }
+
     let opt = Opt::from_args();
     let dry_run = !&opt.go;
 
