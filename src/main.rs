@@ -94,7 +94,7 @@ fn regex_query_or_die(pattern: &str, replacement: &str) -> ruplacer::query::Quer
 
 // Set proper env variable so that the colored crate behaves properly.
 // See: https://bixense.com/clicolors/
-fn configure_color(when: ColorWhen) {
+fn configure_color(when: &ColorWhen) {
     match when {
         ColorWhen::Always => std::env::set_var("CLICOLOR_FORCE", "1"),
         ColorWhen::Never => std::env::set_var("CLICOLOR", "0"),
@@ -119,10 +119,10 @@ fn print_stats(stats: ruplacer::Stats, dry_run: bool) {
 
 fn main() {
     let opt = Opt::from_args();
-    let dry_run = !opt.go;
+    let dry_run = !&opt.go;
 
-    let color_when = opt.color_when.unwrap_or(ColorWhen::Auto);
-    configure_color(color_when);
+    let color_when = &opt.color_when.unwrap_or(ColorWhen::Auto);
+    configure_color(&color_when);
 
     let path = opt.path;
     let path = path.unwrap_or(Path::new(".").to_path_buf());
@@ -135,9 +135,11 @@ fn main() {
         regex_query_or_die(&opt.pattern, &opt.replacement)
     };
 
-    let mut directory_patcher = ruplacer::DirectoryPatcher::new(path);
-    directory_patcher.dry_run(dry_run);
-    directory_patcher.file_type(opt.file_type);
+    let settings = ruplacer::Settings {
+        dry_run,
+        file_type: opt.file_type,
+    };
+    let mut directory_patcher = ruplacer::DirectoryPatcher::new(path, settings);
     let outcome = directory_patcher.patch(query);
     if let Err(err) = outcome {
         eprintln!("{}: {}", "Error".bold().red(), err);

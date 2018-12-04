@@ -7,6 +7,7 @@ use tempdir::TempDir;
 
 use ruplacer::query;
 use ruplacer::DirectoryPatcher;
+use ruplacer::Settings;
 
 fn setup_test(tmp_dir: &TempDir) -> PathBuf {
     let tmp_path = tmp_dir.path();
@@ -35,7 +36,7 @@ fn test_replace_old_by_new() {
     let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
 
-    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
+    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), Settings::default());
     directory_patcher
         .patch(query::substring("old", "new"))
         .expect("ruplacer failed");
@@ -53,7 +54,7 @@ fn test_stats() {
     let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
 
-    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
+    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), Settings::default());
 
     directory_patcher
         .patch(query::substring("old", "new"))
@@ -68,8 +69,9 @@ fn test_dry_run() {
     let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
 
-    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
-    directory_patcher.dry_run(true);
+    let mut settings = Settings::default();
+    settings.dry_run = true;
+    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), settings);
     directory_patcher
         .patch(query::substring("old", "new"))
         .expect("ruplacer failed");
@@ -83,7 +85,7 @@ fn test_with_gitignore() {
     let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
 
-    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
+    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), Settings::default());
     directory_patcher
         .patch(query::substring("old", "new"))
         .expect("ruplacer failed");
@@ -99,8 +101,26 @@ fn test_skip_non_utf8_files() {
     let bin_path = data_path.join("foo.latin1");
     fs::write(bin_path, b"caf\xef\n").unwrap();
 
-    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf());
+    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), Settings::default());
     directory_patcher
         .patch(query::substring("old", "new"))
         .expect("ruplacer failed");
+}
+
+#[test]
+fn test_file_type() {
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+    let py_path = data_path.join("foo.py");
+    fs::write(py_path, "a = 'this is old'\n").unwrap();
+
+    let mut settings = Settings::default();
+    settings.file_type = Some("py".to_string());
+
+    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), settings);
+    directory_patcher
+        .patch(query::substring("old", "new"))
+        .expect("ruplacer failed");
+    let stats = directory_patcher.stats();
+    assert_eq!(stats.matching_files, 1);
 }

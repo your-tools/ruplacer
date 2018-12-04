@@ -6,23 +6,22 @@ use std::path::{Path, PathBuf};
 
 use file_patcher::FilePatcher;
 use query::Query;
+use settings::Settings;
 use stats::Stats;
 
 pub struct DirectoryPatcher {
     path: PathBuf,
-    dry_run: bool,
+    settings: Settings,
     stats: Stats,
-    file_type: Option<String>,
 }
 
 impl DirectoryPatcher {
-    pub fn new(path: PathBuf) -> DirectoryPatcher {
+    pub fn new(path: PathBuf, settings: Settings) -> DirectoryPatcher {
         let stats = Stats::default();
         DirectoryPatcher {
             path,
-            dry_run: false,
+            settings,
             stats,
-            file_type: None,
         }
     }
 
@@ -33,14 +32,6 @@ impl DirectoryPatcher {
 
     pub fn stats(self) -> Stats {
         self.stats
-    }
-
-    pub fn dry_run(&mut self, dry_run: bool) {
-        self.dry_run = dry_run
-    }
-
-    pub fn file_type(&mut self, file_type: Option<String>) {
-        self.file_type = file_type;
     }
 
     pub fn patch_file(&mut self, entry: &Path, query: &Query) -> Result<(), Error> {
@@ -59,7 +50,7 @@ impl DirectoryPatcher {
         }
         self.stats.update(replacements.len());
         file_patcher.print_patch();
-        if self.dry_run {
+        if self.settings.dry_run {
             return Ok(());
         }
         if let Err(err) = file_patcher.run() {
@@ -71,7 +62,7 @@ impl DirectoryPatcher {
     fn build_walker(&self) -> Result<ignore::Walk, Error> {
         let mut types_builder = ignore::types::TypesBuilder::new();
         types_builder.add_defaults();
-        if let Some(selected_type) = &self.file_type {
+        if let Some(selected_type) = &self.settings.file_type {
             types_builder.select(&selected_type);
         }
         let types_matcher = types_builder.build()?;
