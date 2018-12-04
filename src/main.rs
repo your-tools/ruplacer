@@ -66,6 +66,9 @@ struct Opt {
     )]
     subvert: bool,
 
+    #[structopt(short = "t", long = "type", help = "Only search files matching <file_type>")]
+    file_type: Option<String>,
+
     #[structopt(
         long = "--color",
         help = "Wether to enable colorful output. Choose between 'always', 'auto', or 'never'. Default is 'auto'"
@@ -134,6 +137,7 @@ fn main() {
 
     let mut directory_patcher = ruplacer::DirectoryPatcher::new(path);
     directory_patcher.dry_run(dry_run);
+    directory_patcher.file_type(opt.file_type);
     let outcome = directory_patcher.patch(query);
     if let Err(err) = outcome {
         eprintln!("{}: {}", "Error".bold().red(), err);

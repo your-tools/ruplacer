@@ -12,6 +12,7 @@ pub struct DirectoryPatcher {
     path: PathBuf,
     dry_run: bool,
     stats: Stats,
+    file_type: Option<String>,
 }
 
 impl DirectoryPatcher {
@@ -21,6 +22,7 @@ impl DirectoryPatcher {
             path,
             dry_run: false,
             stats,
+            file_type: None,
         }
     }
 
@@ -35,6 +37,10 @@ impl DirectoryPatcher {
 
     pub fn dry_run(&mut self, dry_run: bool) {
         self.dry_run = dry_run
+    }
+
+    pub fn file_type(&mut self, file_type: Option<String>) {
+        self.file_type = file_type;
     }
 
     pub fn patch_file(&mut self, entry: &Path, query: &Query) -> Result<(), Error> {
@@ -62,8 +68,21 @@ impl DirectoryPatcher {
         Ok(())
     }
 
+    fn build_walker(&self) -> Result<ignore::Walk, Error> {
+        let mut types_builder = ignore::types::TypesBuilder::new();
+        types_builder.add_defaults();
+        if let Some(selected_type) = &self.file_type {
+            types_builder.select(&selected_type);
+        }
+        let types_matcher = types_builder.build()?;
+        let mut walk_builder = ignore::WalkBuilder::new(&self.path);
+        walk_builder.types(types_matcher);
+        Ok(walk_builder.build())
+    }
+
     fn walk(&mut self, query: Query) -> Result<(), Error> {
-        for result in ignore::Walk::new(&self.path) {
+        let walker = self.build_walker()?;
+        for result in walker {
             match result {
                 Ok(entry) => {
                     if let Some(file_type) = entry.file_type() {
