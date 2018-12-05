@@ -1,3 +1,7 @@
+# 0.3.0
+
+* Implement #18: Add `-t, --type`, `-T, --type-not` and `--type-list` options. Suggested by @Dowwie.
+
 # 0.2.7
 
 * Fix deployment from travis
