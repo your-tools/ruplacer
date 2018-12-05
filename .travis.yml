@@ -1,5 +1,10 @@
 language: rust
 
+addons:
+  homebrew:
+    packages:
+    - python
+
 rust:
   - stable
   - nightly
@@ -13,10 +18,10 @@ script:
   - cargo build --release
   - cargo test --release
 
+
 before_deploy:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then python3 gen_artifacts.py --version $TRAVIS_TAG --platform linux-x86_64 ; fi
 
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew bundle ; fi  # install python3
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then python3 gen_artifacts.py --version $TRAVIS_TAG --platform osx; fi
 
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]] ; then choco install python; fi
