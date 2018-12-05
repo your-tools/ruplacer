@@ -20,7 +20,7 @@ impl FilePatcher {
         let file = File::open(&path)?;
         let reader = BufReader::new(file);
         let mut new_contents = String::new();
-        for (num, chunk) in reader.split('\n' as u8).enumerate() {
+        for (num, chunk) in reader.split(b'\n').enumerate() {
             let chunk = chunk?; // consume the io::error
             let line = String::from_utf8(chunk);
             if line.is_err() {
@@ -67,9 +67,9 @@ impl FilePatcher {
         );
         for replacement in &self.replacements {
             replacement.print_self();
-            print!("\n");
+            println!();
         }
-        print!("\n");
+        println!();
     }
 }
 
@@ -91,7 +91,7 @@ impl Replacement {
                 _ => (),
             }
         }
-        print!("\n");
+        println!();
         print!("{} ", "++".green());
         for diff in &changeset.diffs {
             match diff {

@@ -97,7 +97,7 @@ $ ruplacer '\(a\|o|)' u
 ```
 
 
-## subvert mode
+## Subvert mode
 
 Ruplacer has a `--subvert` option which works across a variety of case styles (lower case, snake case, and so on):
 
@@ -107,3 +107,18 @@ Patching src/foo.txt
 -- foo_bar, FooBar, and FOO_BAR!
 ++ spam_eggs, SpamEggs, and SPAM_EGGS!
 ```
+
+## Filter files by type
+
+Inspired by [ripgrep](https://github.com/BurntSushi/ripgrep), you can also select or ignore certain "file types":
+
+```
+# Select only C++ files
+$ ruplacer old new --type cpp
+# Ignore all js files
+$ ruplacer old new --type-ignore js
+```
+
+Each "file type" is just a list of glob pattern. For instance: the `cpp` file type matches `*.C`, `*.H`, `*.cc`, `*.cpp` and so on ...
+
+You can see the whole list by using `ruplacer --file-types`.

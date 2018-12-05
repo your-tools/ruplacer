@@ -55,6 +55,12 @@ struct Opt {
     #[structopt(help = "The pattern to search for")]
     pattern: String,
 
+    #[structopt(help = "The replacement")]
+    replacement: String,
+
+    #[structopt(parse(from_os_str), help = "The source path. Defaults to the working directory")]
+    path: Option<PathBuf>,
+
     #[structopt(
         long = "--no-regex", help = "Interpret pattern as a a raw string. Default is: regex"
     )]
@@ -67,16 +73,31 @@ struct Opt {
     subvert: bool,
 
     #[structopt(
+        short = "t",
+        long = "type",
+        help = "Only search files matching <file_type>",
+        multiple = true,
+        number_of_values = 1
+    )]
+    selected_file_types: Vec<String>,
+
+    #[structopt(
+        short = "T",
+        long = "type-not",
+        help = "Ignore files matching <file_type>",
+        multiple = true,
+        number_of_values = 1
+    )]
+    ignored_file_types: Vec<String>,
+
+    #[structopt(long = "type-list", help = "List the known file types")]
+    file_type_list: bool,
+
+    #[structopt(
         long = "--color",
         help = "Wether to enable colorful output. Choose between 'always', 'auto', or 'never'. Default is 'auto'"
     )]
     color_when: Option<ColorWhen>,
-
-    #[structopt(help = "The replacement")]
-    replacement: String,
-
-    #[structopt(parse(from_os_str), help = "The source path. Defaults to the working directory")]
-    path: Option<PathBuf>,
 }
 
 fn regex_query_or_die(pattern: &str, replacement: &str) -> ruplacer::query::Query {
@@ -91,7 +112,7 @@ fn regex_query_or_die(pattern: &str, replacement: &str) -> ruplacer::query::Quer
 
 // Set proper env variable so that the colored crate behaves properly.
 // See: https://bixense.com/clicolors/
-fn configure_color(when: ColorWhen) {
+fn configure_color(when: &ColorWhen) {
     match when {
         ColorWhen::Always => std::env::set_var("CLICOLOR_FORCE", "1"),
         ColorWhen::Never => std::env::set_var("CLICOLOR", "0"),
@@ -105,7 +126,7 @@ fn configure_color(when: ColorWhen) {
     }
 }
 
-fn print_stats(stats: ruplacer::Stats, dry_run: bool) {
+fn print_stats(stats: &ruplacer::Stats, dry_run: bool) {
     if dry_run {
         print!("Would perform ")
     } else {
@@ -114,27 +135,53 @@ fn print_stats(stats: ruplacer::Stats, dry_run: bool) {
     println!("{}", stats)
 }
 
-fn main() {
-    let opt = Opt::from_args();
-    let dry_run = !opt.go;
+fn on_type_list() {
+    println!("Known file types:");
+    let mut types_builder = ignore::types::TypesBuilder::new();
+    types_builder.add_defaults();
+    for def in types_builder.definitions() {
+        let name = def.name();
+        let globs = def.globs();
+        println!("{}: {}", name.bold(), globs.join(", "));
+    }
+    return;
+}
 
-    let color_when = opt.color_when.unwrap_or(ColorWhen::Auto);
-    configure_color(color_when);
+fn main() {
+    let args: Vec<_> = std::env::args().collect();
+    if args.contains(&"--type-list".to_string()) {
+        on_type_list();
+        return;
+    }
+
+    let opt = Opt::from_args();
+    let dry_run = !&opt.go;
+
+    let color_when = &opt.color_when.unwrap_or(ColorWhen::Auto);
+    configure_color(&color_when);
 
     let path = opt.path;
-    let path = path.unwrap_or(Path::new(".").to_path_buf());
+    let path = path.unwrap_or_else(|| Path::new(".").to_path_buf());
 
+    #[cfg_attr(rustfmt, rustfmt_skip)]
+    let Opt { pattern, replacement, .. } = opt;
     let query = if opt.no_regex {
-        ruplacer::query::substring(&opt.pattern, &opt.replacement)
+        ruplacer::query::substring(&pattern, &replacement)
     } else if opt.subvert {
-        ruplacer::query::subvert(&opt.pattern, &opt.replacement)
+        ruplacer::query::subvert(&pattern, &replacement)
     } else {
-        regex_query_or_die(&opt.pattern, &opt.replacement)
+        regex_query_or_die(&pattern, &replacement)
     };
 
-    let mut directory_patcher = ruplacer::DirectoryPatcher::new(path);
-    directory_patcher.dry_run(dry_run);
-    let outcome = directory_patcher.patch(query);
+    #[cfg_attr(rustfmt, rustfmt_skip)]
+    let Opt { selected_file_types, ignored_file_types, .. } = opt;
+    let settings = ruplacer::Settings {
+        dry_run,
+        selected_file_types,
+        ignored_file_types,
+    };
+    let mut directory_patcher = ruplacer::DirectoryPatcher::new(path, settings);
+    let outcome = directory_patcher.patch(&query);
     if let Err(err) = outcome {
         eprintln!("{}: {}", "Error".bold().red(), err);
         process::exit(1);
@@ -145,7 +192,7 @@ fn main() {
         eprintln!("{}: {}", "Error".bold().red(), "nothing found to replace");
         process::exit(2);
     }
-    print_stats(stats, dry_run);
+    print_stats(&stats, dry_run);
     if dry_run {
         println!("Re-run ruplacer with --go to write these changes to the filesystem");
     }
