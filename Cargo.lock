@@ -348,7 +348,7 @@ dependencies = [
 
 [[package]]
 name = "ruplacer"
-version = "0.2.7"
+version = "0.3.0"
 dependencies = [
  "Inflector 0.11.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "colored 1.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
