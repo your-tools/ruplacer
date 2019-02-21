@@ -42,7 +42,7 @@ EXAMPLES:
     $ ruplacer foo bar
 
     Replace 'LastName, FirstName' with 'FirstName LastName'
-    $ ruplacer '(\\w)+, (\\w)+' '$2 $1'
+    $ ruplacer '(\\w+), (\\w+)' '$2 $1'
 
     Replace 'FooBar' with 'SpamEggs', 'foo_bar' with 'spam_eggs', ...
     $ ruplacer --subvert FooBar SpamEggs
