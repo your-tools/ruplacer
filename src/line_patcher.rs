@@ -3,7 +3,7 @@ use inflector::cases::kebabcase::*;
 use inflector::cases::pascalcase::*;
 use inflector::cases::screamingsnakecase::*;
 use inflector::cases::snakecase::*;
-use query::Query;
+use crate::query::Query;
 
 pub struct LinePatcher {
     input: String,
@@ -47,7 +47,7 @@ impl LinePatcher {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use query;
+    use crate::query;
     use regex;
 
     #[test]
