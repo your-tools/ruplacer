@@ -68,7 +68,7 @@ groups captured from `pattern` inside `replacement`.
 For instance, this replaces 'last, first' by 'first last':
 
 ```
-$ ruplacer '(\w)+, (\w)+' '$2 $1'
+$ ruplacer '(\w+), (\w+)' '$2 $1'
 ```
 
 (note the use of single quotes to avoid any processing by the shell)
