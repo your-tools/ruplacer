@@ -58,11 +58,15 @@ struct Opt {
     #[structopt(help = "The replacement")]
     replacement: String,
 
-    #[structopt(parse(from_os_str), help = "The source path. Defaults to the working directory")]
+    #[structopt(
+        parse(from_os_str),
+        help = "The source path. Defaults to the working directory"
+    )]
     path: Option<PathBuf>,
 
     #[structopt(
-        long = "--no-regex", help = "Interpret pattern as a a raw string. Default is: regex"
+        long = "--no-regex",
+        help = "Interpret pattern as a a raw string. Default is: regex"
     )]
     no_regex: bool,
 
@@ -163,8 +167,11 @@ fn main() {
     let path = opt.path;
     let path = path.unwrap_or_else(|| Path::new(".").to_path_buf());
 
-    #[cfg_attr(rustfmt, rustfmt_skip)]
-    let Opt { pattern, replacement, .. } = opt;
+    let Opt {
+        pattern,
+        replacement,
+        ..
+    } = opt;
     let query = if opt.no_regex {
         ruplacer::query::substring(&pattern, &replacement)
     } else if opt.subvert {
@@ -173,8 +180,11 @@ fn main() {
         regex_query_or_die(&pattern, &replacement)
     };
 
-    #[cfg_attr(rustfmt, rustfmt_skip)]
-    let Opt { selected_file_types, ignored_file_types, .. } = opt;
+    let Opt {
+        selected_file_types,
+        ignored_file_types,
+        ..
+    } = opt;
     let settings = ruplacer::Settings {
         dry_run,
         selected_file_types,

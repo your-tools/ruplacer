@@ -29,7 +29,6 @@ impl LinePatcher {
     }
 
     pub fn replace(&self, query: &Query) -> String {
-        #[cfg_attr(rustfmt, rustfmt_skip)]
         match query {
             Query::Substring(old, new) => {
                 self.input.replace(old, new)
