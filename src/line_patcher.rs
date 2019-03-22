@@ -1,9 +1,9 @@
+use crate::query::Query;
 use inflector::cases::camelcase::*;
 use inflector::cases::kebabcase::*;
 use inflector::cases::pascalcase::*;
 use inflector::cases::screamingsnakecase::*;
 use inflector::cases::snakecase::*;
-use crate::query::Query;
 
 pub struct LinePatcher {
     input: String,
@@ -30,15 +30,11 @@ impl LinePatcher {
 
     pub fn replace(&self, query: &Query) -> String {
         match query {
-            Query::Substring(old, new) => {
-                self.input.replace(old, new)
-            }
+            Query::Substring(old, new) => self.input.replace(old, new),
             Query::Regex(re, replacement) => {
                 re.replace_all(&self.input, replacement as &str).to_string()
             }
-            Query::Subvert(pattern, replacement) => {
-                subvert_line(&self.input, pattern, replacement)
-            }
+            Query::Subvert(pattern, replacement) => subvert_line(&self.input, pattern, replacement),
         }
     }
 }
