@@ -2,6 +2,7 @@ import argparse
 import os
 import shutil
 import subprocess
+import sys
 
 
 def run(*cmd):
@@ -49,10 +50,13 @@ def generate_deb():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--version", required=True)
-    parser.add_argument("--platform", required=True)
     args = parser.parse_args()
     version = args.version
-    platform = args.platform
+    platform = {
+       "darwin": "macos",
+       "linux": "linux-x86_64",
+       "win32": "windows",
+    }[sys.platform]
 
     build_release()
     archive_path = "ruplacer-%s-%s" % (version, platform)

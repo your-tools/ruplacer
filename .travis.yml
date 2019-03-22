@@ -15,19 +15,11 @@ os:
   - windows
 
 script:
-  - if [[ "$TRAVIS_RUST_VERSION" == "stable" ]]; then rustup component add clippy-preview ; fi
-  - if [[ "$TRAVIS_RUST_VERSION" == "stable" ]]; then cargo clippy --all-targets -- --deny warnings; fi
-  - cargo build --release
-  - cargo test --release
+  - bash ci/check.sh
 
 
 before_deploy:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then python3 gen_artifacts.py --version $TRAVIS_TAG --platform linux-x86_64 ; fi
-
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then python3 gen_artifacts.py --version $TRAVIS_TAG --platform osx; fi
-
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]] ; then choco install python; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]] ; then /c/python37/python gen_artifacts.py --version $TRAVIS_TAG --platform windows;fi
+  - bash ci/gen_artifacts.sh
 
 deploy:
   skip_cleanup: true
