@@ -1,3 +1,7 @@
+# 0.4.1
+
+* Fix release scripts
+
 # 0.4.0
 
 * Add `-w, --word-regex` to match regex only inside words. Note that
