@@ -3,13 +3,16 @@ set -e
 
 
 main() {
-  rustup component add clippy
-  cargo clippy --all-targets -- --deny warnings
+  if [[ "${TRAVIS_RUST_VERSION}" == "stable" ]] && [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+    # No need to run clippy or fmt --check more than once
+    rustup component add clippy
+    cargo clippy --all-targets -- --deny warnings
+
+    rustup component add rustfmt
+    cargo fmt -- --check
+  fi
 
   cargo build --release
-
-  rustup component add rustfmt
-  cargo fmt -- --check
 
   if [[ "${TRAVIS_RUST_VERSION}" == "nightly" ]] && [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-tarpaulin

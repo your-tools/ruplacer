@@ -71,6 +71,13 @@ struct Opt {
     no_regex: bool,
 
     #[structopt(
+        long = "--word-regex",
+        short = "-w",
+        help = "Interpret pattern as a 'word' regex"
+    )]
+    word_regex: bool,
+
+    #[structopt(
         long = "--subvert",
         help = "Replace all variants of the pattern (snake_case, CamelCase and so on)"
     )]
@@ -104,8 +111,13 @@ struct Opt {
     color_when: Option<ColorWhen>,
 }
 
-fn regex_query_or_die(pattern: &str, replacement: &str) -> ruplacer::query::Query {
-    let re = regex::Regex::new(pattern);
+fn regex_query_or_die(pattern: &str, replacement: &str, word: bool) -> ruplacer::query::Query {
+    let actual_pattern = if word {
+        format!(r"\b({})\b", pattern)
+    } else {
+        pattern.to_string()
+    };
+    let re = regex::Regex::new(&actual_pattern);
     if let Err(e) = re {
         eprintln!("{}: {}", "Invalid regex".bold().red(), e);
         process::exit(1);
@@ -170,6 +182,7 @@ fn main() {
     let Opt {
         pattern,
         replacement,
+        word_regex,
         ..
     } = opt;
     let query = if opt.no_regex {
@@ -177,7 +190,7 @@ fn main() {
     } else if opt.subvert {
         ruplacer::query::subvert(&pattern, &replacement)
     } else {
-        regex_query_or_die(&pattern, &replacement)
+        regex_query_or_die(&pattern, &replacement, word_regex)
     };
 
     let Opt {

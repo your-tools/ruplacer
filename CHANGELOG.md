@@ -1,3 +1,8 @@
+# 0.4.0
+
+* Add `-w, --word-regex` to match regex only inside words. Note that
+  `ruplacer -w old new` is *exactly* the same as `ruplacer '\bold\b' new`.
+
 # 0.3.0
 
 * Implement #18: Add `-t, --type`, `-T, --type-not` and `--type-list` options. Suggested by @Dowwie.
