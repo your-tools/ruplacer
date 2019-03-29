@@ -10,4 +10,4 @@ main() {
    fi
 }
 
-main()
+main
