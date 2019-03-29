@@ -25,9 +25,13 @@ src = "README.md"
 search = "releases/tag/v{current_version}"
 
 
-[[before_push]]
+[[before_commit]]
 name = "run tests"
 cmd = "cargo test"
+
+[[before_commit]]
+name = "check changelog"
+cmd = "grep {new_version} CHANGELOG.md"
 
 [[after_push]]
 name = "publish"
