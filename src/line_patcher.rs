@@ -14,6 +14,8 @@ fn subvert_line(input: &str, pattern: &str, replacement: &str) -> String {
     let res = res.replace(&to_pascal_case(pattern), &to_pascal_case(replacement));
     let res = res.replace(&to_snake_case(pattern), &to_snake_case(replacement));
     let res = res.replace(&to_kebab_case(pattern), &to_kebab_case(replacement));
+    let res = res.replace(&pattern.to_lowercase(), &replacement.to_lowercase());
+    let res = res.replace(&pattern.to_uppercase(), &replacement.to_uppercase());
     let res = res.replace(
         &to_screaming_snake_case(pattern),
         &to_screaming_snake_case(replacement),
@@ -75,5 +77,13 @@ mod tests {
         let query = query::subvert("foo_bar", "SpamEggs");
         let actual = LinePatcher::new(input).replace(&query);
         assert_eq!(actual, "spam_eggs, SpamEggs, SPAM_EGGS and spam-eggs");
+    }
+
+    #[test]
+    fn test_subvert_multiple_casing() {
+        let input = "stuffStuff stuffstuff STUFFSTUFF";
+        let query = query::subvert("stuffStuff", "fooFoo");
+        let actual = LinePatcher::new(input).replace(&query);
+        assert_eq!(actual, "fooFoo foofoo FOOFOO");
     }
 }
