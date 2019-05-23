@@ -20,7 +20,7 @@ cargo install ruplacer
 
 ## Alternative installation methods
 
-* Pre-compiled binaries for Linux, macOS, and Windows are available as [assests of the latest release](
+* Pre-compiled binaries for Linux, macOS, and Windows are available as [assets of the latest release](
 https://github.com/TankerHQ/ruplacer/releases/tag/v0.4.1).
 
 * `ruplacer` can also be installed from `homebrew`:
