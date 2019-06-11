@@ -106,7 +106,7 @@ struct Opt {
 
     #[structopt(
         long = "--color",
-        help = "Wether to enable colorful output. Choose between 'always', 'auto', or 'never'. Default is 'auto'"
+        help = "Whether to enable colorful output. Choose between 'always', 'auto', or 'never'. Default is 'auto'"
     )]
     color_when: Option<ColorWhen>,
 }
