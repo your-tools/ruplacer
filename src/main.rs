@@ -66,7 +66,7 @@ struct Opt {
 
     #[structopt(
         long = "--no-regex",
-        help = "Interpret pattern as a a raw string. Default is: regex"
+        help = "Interpret pattern as a raw string. Default is: regex"
     )]
     no_regex: bool,
 
