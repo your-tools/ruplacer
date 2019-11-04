@@ -160,7 +160,6 @@ fn on_type_list() {
         let globs = def.globs();
         println!("{}: {}", name.bold(), globs.join(", "));
     }
-    return;
 }
 
 fn main() {
