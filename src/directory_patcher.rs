@@ -33,7 +33,7 @@ impl DirectoryPatcher {
     }
 
     pub fn patch_file(&mut self, entry: &Path, query: &Query) -> Result<(), Error> {
-        let file_patcher = FilePatcher::new(entry.to_path_buf(), &query);
+        let file_patcher = FilePatcher::new(entry, &query);
         if let Err(err) = &file_patcher {
             match err.kind() {
                 // Just ignore binary or non-utf8 files

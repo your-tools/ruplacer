@@ -2,7 +2,7 @@ use colored::*;
 use difference::{Changeset, Difference};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use crate::line_patcher::LinePatcher;
 use crate::query::Query;
@@ -14,7 +14,7 @@ pub struct FilePatcher {
 }
 
 impl FilePatcher {
-    pub fn new(path: PathBuf, query: &Query) -> Result<FilePatcher, std::io::Error> {
+    pub fn new(path: &Path, query: &Query) -> Result<FilePatcher, std::io::Error> {
         let mut replacements = vec![];
         let file = File::open(&path)?;
         let reader = BufReader::new(file);
@@ -44,7 +44,7 @@ impl FilePatcher {
         }
         Ok(FilePatcher {
             replacements,
-            path,
+            path: path.to_path_buf(),
             new_contents,
         })
     }
@@ -111,8 +111,7 @@ mod tests {
     #[test]
     fn test_compute_replacements() {
         let top_path = std::path::Path::new("tests/data/top.txt");
-        let file_patcher =
-            FilePatcher::new(top_path.to_path_buf(), &query::substring("old", "new")).unwrap();
+        let file_patcher = FilePatcher::new(&top_path, &query::substring("old", "new")).unwrap();
         let replacements = file_patcher.replacements();
         assert_eq!(replacements.len(), 1);
         let actual_replacement = &replacements[0];
@@ -132,8 +131,7 @@ mod tests {
         let temp_dir = tempdir::TempDir::new("test-ruplacer").unwrap();
         let file_path = temp_dir.path().join("foo.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line\n").unwrap();
-        let file_patcher =
-            FilePatcher::new(file_path.to_path_buf(), &query::substring("old", "new")).unwrap();
+        let file_patcher = FilePatcher::new(&file_path, &query::substring("old", "new")).unwrap();
         file_patcher.run().unwrap();
         let actual = fs::read_to_string(&file_path).unwrap();
         let expected = "first line\nI say: new is nice\nlast line\n";
