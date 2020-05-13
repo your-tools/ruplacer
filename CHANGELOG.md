@@ -1,3 +1,7 @@
+# 0.4.2
+
+* Fix metadata in Cargo.toml
+
 # 0.4.1
 
 * Fix release scripts

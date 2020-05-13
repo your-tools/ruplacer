@@ -10,7 +10,7 @@ readme = "README.md"
 keywords = ["ruplacer", "find", "grep", "command", "line"]
 categories = ["command-line-utilities"]
 
-repository = "https://github.com/TankerApp/ruplacer"
+repository = "https://github.com/TankerHQ/ruplacer"
 
 [dependencies]
 difference = "2.0"
