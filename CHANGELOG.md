@@ -1,3 +1,7 @@
+# 0.4.3
+
+* Bump smallvec
+
 # 0.4.2
 
 * Fix metadata in Cargo.toml
