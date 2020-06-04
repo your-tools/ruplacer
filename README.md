@@ -1,8 +1,10 @@
-# Ruplacer
+<a href="#readme"><img src="https://tanker.io/images/github-logo.png" alt="Tanker logo" width="180" /></a>
 
 [![crates.io image](https://img.shields.io/crates/v/ruplacer.svg)](https://crates.io/crates/ruplacer)
 [![Build](https://img.shields.io/travis/TankerHQ/ruplacer.svg?branch=master)](https://travis-ci.org/TankerHQ/ruplacer)
 [![Coverage](https://img.shields.io/codecov/c/github/TankerHQ/ruplacer.svg?label=Coverage)](https://codecov.io/gh/TankerHQ/ruplacer)
+
+# Ruplacer
 
 Find and replace text in source files.
 
