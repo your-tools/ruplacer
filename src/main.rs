@@ -41,7 +41,7 @@ EXAMPLES:
     $ ruplacer --subvert FooBar SpamEggs
 "
 )]
-struct Opt {
+struct Options {
     #[structopt(long = "go")]
     go: bool,
 
@@ -156,40 +156,41 @@ fn on_type_list() {
 }
 
 fn main() {
-    let args: Vec<_> = std::env::args().collect();
-    if args.contains(&"--type-list".to_string()) {
+    let opt = Options::from_args();
+    let Options {
+        color_when,
+        file_type_list,
+        go,
+        ignored_file_types,
+        no_regex,
+        path,
+        pattern,
+        replacement,
+        selected_file_types,
+        subvert,
+        word_regex,
+    } = opt;
+
+    if file_type_list {
         on_type_list();
         return;
     }
 
-    let opt = Opt::from_args();
-    let dry_run = !&opt.go;
+    let dry_run = !go;
 
-    let color_when = &opt.color_when.unwrap_or(ColorWhen::Auto);
+    let color_when = &color_when.unwrap_or(ColorWhen::Auto);
     configure_color(&color_when);
 
-    let path = opt.path;
     let path = path.unwrap_or_else(|| Path::new(".").to_path_buf());
 
-    let Opt {
-        pattern,
-        replacement,
-        word_regex,
-        ..
-    } = opt;
-    let query = if opt.no_regex {
+    let query = if no_regex {
         ruplacer::query::substring(&pattern, &replacement)
-    } else if opt.subvert {
+    } else if subvert {
         ruplacer::query::subvert(&pattern, &replacement)
     } else {
         regex_query_or_die(&pattern, &replacement, word_regex)
     };
 
-    let Opt {
-        selected_file_types,
-        ignored_file_types,
-        ..
-    } = opt;
     let settings = ruplacer::Settings {
         dry_run,
         selected_file_types,
