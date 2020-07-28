@@ -1,15 +1,8 @@
-extern crate colored;
-extern crate isatty;
-extern crate regex;
-extern crate structopt;
-
 use colored::*;
 use isatty::stdout_isatty;
 use std::path::{Path, PathBuf};
 use std::process;
 use structopt::StructOpt;
-
-extern crate ruplacer;
 
 #[derive(Debug)]
 enum ColorWhen {

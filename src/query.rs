@@ -1,5 +1,3 @@
-use regex;
-
 pub enum Query {
     Substring(String, String),
     Regex(regex::Regex, String),

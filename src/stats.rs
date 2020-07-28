@@ -1,5 +1,4 @@
 use inflector::string::pluralize::to_plural;
-use std;
 
 #[derive(Default)]
 pub struct Stats {

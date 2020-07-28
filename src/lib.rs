@@ -1,8 +1,3 @@
-extern crate colored;
-extern crate difference;
-extern crate ignore;
-extern crate inflector;
-extern crate regex;
 mod errors;
 pub use crate::errors::Error;
 mod directory_patcher;

@@ -1,5 +1,3 @@
-extern crate ruplacer;
-extern crate tempdir;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;

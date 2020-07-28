@@ -1,6 +1,5 @@
 use colored::*;
 use difference::{Changeset, Difference};
-use std;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
@@ -105,7 +104,6 @@ impl Replacement {
 
 #[cfg(test)]
 mod tests {
-    extern crate tempdir;
     use super::*;
     use crate::query;
     use std::fs;

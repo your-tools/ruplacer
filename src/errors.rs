@@ -1,6 +1,3 @@
-use ignore;
-use std;
-
 #[derive(Debug)]
 pub struct Error {
     description: String,

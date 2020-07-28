@@ -43,7 +43,6 @@ impl LinePatcher {
 mod tests {
     use super::*;
     use crate::query;
-    use regex;
 
     #[test]
     fn test_substring() {

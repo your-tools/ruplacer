@@ -1,5 +1,3 @@
-use ignore;
-
 use crate::errors::Error;
 use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
