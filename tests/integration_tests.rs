@@ -82,14 +82,47 @@ fn test_dry_run() {
 }
 
 #[test]
-fn test_with_gitignore() {
+fn test_skip_hidden_and_ignored_by_default() {
     let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
 
     let settings = Settings::default();
     run_ruplacer(&data_path, settings);
 
-    let ignored_path = data_path.join(".hidden/hidden.txt");
+    let hidden_path = data_path.join(".hidden.txt");
+    assert_not_replaced(&hidden_path);
+
+    let ignored_path = data_path.join("ignore.txt");
+    assert_not_replaced(&ignored_path);
+}
+
+#[test]
+fn test_can_replace_hidden_files() {
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+
+    let settings = Settings {
+        hidden: true,
+        ..Default::default()
+    };
+    run_ruplacer(&data_path, settings);
+
+    let hidden_path = data_path.join(".hidden.txt");
+    assert_replaced(&hidden_path);
+}
+
+#[test]
+fn test_can_replace_ignored_files() {
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+
+    let settings = Settings {
+        ignored: true,
+        ..Default::default()
+    };
+    run_ruplacer(&data_path, settings);
+
+    let ignored_path = data_path.join("ignore.txt");
     assert_not_replaced(&ignored_path);
 }
 
