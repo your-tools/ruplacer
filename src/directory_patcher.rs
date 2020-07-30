@@ -1,5 +1,4 @@
 use crate::errors::Error;
-use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
 
 use crate::file_patcher::FilePatcher;
@@ -33,15 +32,11 @@ impl DirectoryPatcher {
     }
 
     pub fn patch_file(&mut self, entry: &Path, query: &Query) -> Result<(), Error> {
-        let file_patcher = FilePatcher::new(entry, &query);
-        if let Err(err) = &file_patcher {
-            match err.kind() {
-                // Just ignore binary or non-utf8 files
-                ErrorKind::InvalidData => return Ok(()),
-                _ => return Error::from_read_error(entry, err),
-            }
-        }
-        let file_patcher = file_patcher.unwrap();
+        let file_patcher = FilePatcher::new(entry, &query)?;
+        let file_patcher = match file_patcher {
+            None => return Ok(()),
+            Some(f) => f,
+        };
         let replacements = file_patcher.replacements();
         if replacements.is_empty() {
             return Ok(());
