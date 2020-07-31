@@ -1,5 +1,3 @@
-extern crate ruplacer;
-extern crate tempdir;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -103,7 +101,7 @@ fn test_skip_non_utf8_files() {
 fn add_python_file(data_path: &Path) -> PathBuf {
     let py_path = data_path.join("foo.py");
     fs::write(&py_path, "a = 'this is old'\n").unwrap();
-    py_path.clone()
+    py_path
 }
 
 #[test]

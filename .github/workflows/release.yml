@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+
+  release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+         - os: ubuntu-latest
+           name: linux
+           artifact: ruplacer-linux
+         - os: macos-latest
+           name: osx
+           artifact: ruplacer-osx
+         - os: windows-latest
+           name: windows
+           artifact: ruplacer-windows.exe
+
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v1
+
+    - name: Install latest stable toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    - name: Build
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --release
+
+    - name: Rename artifacts - Linux, macOS
+      if: matrix.name != 'windows'
+      run: mv target/release/ruplacer ${{ matrix.artifact }}
+
+    - name: Rename artifacts - Windows
+      if: matrix.name == 'windows'
+      run: |
+         Move-Item -Path target\release\ruplacer.exe -Destination ${{ matrix.artifact }}
+      shell: powershell
+
+    - name: Upload assets
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ruplacer-*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
