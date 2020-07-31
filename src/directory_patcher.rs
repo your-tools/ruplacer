@@ -1,4 +1,4 @@
-use crate::errors::Error;
+use anyhow::{Context, Result};
 use std::path::{Path, PathBuf};
 
 use crate::file_patcher::FilePatcher;
@@ -22,16 +22,15 @@ impl DirectoryPatcher {
         }
     }
 
-    pub fn patch(&mut self, query: &Query) -> Result<(), Error> {
-        self.walk(&query)?;
-        Ok(())
+    pub fn patch(&mut self, query: &Query) -> Result<()> {
+        self.walk(&query)
     }
 
     pub fn stats(self) -> Stats {
         self.stats
     }
 
-    pub fn patch_file(&mut self, entry: &Path, query: &Query) -> Result<(), Error> {
+    pub fn patch_file(&mut self, entry: &Path, query: &Query) -> Result<()> {
         let file_patcher = FilePatcher::new(entry, &query)?;
         let file_patcher = match file_patcher {
             None => return Ok(()),
@@ -46,13 +45,10 @@ impl DirectoryPatcher {
         if self.settings.dry_run {
             return Ok(());
         }
-        if let Err(err) = file_patcher.run() {
-            return Error::from_write_error(&entry, &err);
-        }
-        Ok(())
+        file_patcher.run()
     }
 
-    fn build_walker(&self) -> Result<ignore::Walk, Error> {
+    fn build_walker(&self) -> ignore::Walk {
         let mut types_builder = ignore::types::TypesBuilder::new();
         types_builder.add_defaults();
         for t in &self.settings.selected_file_types {
@@ -61,29 +57,24 @@ impl DirectoryPatcher {
         for t in &self.settings.ignored_file_types {
             types_builder.negate(t);
         }
-        let types_matcher = types_builder.build()?;
+        let types_matcher = types_builder
+            .build()
+            .expect("Error when building file types");
         let mut walk_builder = ignore::WalkBuilder::new(&self.path);
         walk_builder.types(types_matcher);
-        Ok(walk_builder.build())
+        walk_builder.build()
     }
 
-    fn walk(&mut self, query: &Query) -> Result<(), Error> {
-        let walker = self.build_walker()?;
-        for result in walker {
-            match result {
-                Ok(entry) => {
-                    if let Some(file_type) = entry.file_type() {
-                        if file_type.is_file() {
-                            self.patch_file(&entry.path(), &query)?;
-                        }
-                    }
+    fn walk(&mut self, query: &Query) -> Result<()> {
+        let walker = self.build_walker();
+        for entry in walker {
+            let entry = entry.with_context(|| "Could not read directory entry")?;
+            if let Some(file_type) = entry.file_type() {
+                if file_type.is_file() {
+                    self.patch_file(&entry.path(), &query)?;
                 }
-                Err(err) => return Err(err.into()),
             }
         }
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod tests {}

@@ -1,3 +1,4 @@
+use anyhow::{anyhow, Error, Result};
 use colored::*;
 use isatty::stdout_isatty;
 use std::path::{Path, PathBuf};
@@ -12,16 +13,14 @@ enum ColorWhen {
 }
 
 impl std::str::FromStr for ColorWhen {
-    type Err = ruplacer::Error;
+    type Err = Error;
 
-    fn from_str(s: &str) -> Result<ColorWhen, ruplacer::Error> {
+    fn from_str(s: &str) -> Result<ColorWhen, Error> {
         match s {
             "always" => Ok(ColorWhen::Always),
             "auto" => Ok(ColorWhen::Auto),
             "never" => Ok(ColorWhen::Never),
-            _ => Err(ruplacer::Error::new(
-                "Choose between 'always', 'auto', or 'never'",
-            )),
+            _ => Err(anyhow!("Choose between 'always', 'auto', or 'never'")),
         }
     }
 }
@@ -155,7 +154,7 @@ fn on_type_list() {
     }
 }
 
-fn main() {
+fn main() -> Result<()> {
     let opt = Options::from_args();
     let Options {
         color_when,
@@ -173,7 +172,7 @@ fn main() {
 
     if file_type_list {
         on_type_list();
-        return;
+        return Ok(());
     }
 
     let dry_run = !go;
@@ -197,12 +196,7 @@ fn main() {
         ignored_file_types,
     };
     let mut directory_patcher = ruplacer::DirectoryPatcher::new(path, settings);
-    let outcome = directory_patcher.patch(&query);
-    if let Err(err) = outcome {
-        eprintln!("{}: {}", "Error".bold().red(), err);
-        process::exit(1);
-    }
-
+    directory_patcher.patch(&query)?;
     let stats = directory_patcher.stats();
     if stats.num_replacements == 0 {
         eprintln!("{}: {}", "Error".bold().red(), "nothing found to replace");
@@ -212,4 +206,5 @@ fn main() {
     if dry_run {
         println!("Re-run ruplacer with --go to write these changes to the filesystem");
     }
+    Ok(())
 }

@@ -1,3 +1,4 @@
+use anyhow::{Context, Result};
 use colored::*;
 use difference::{Changeset, Difference};
 use std::fs::File;
@@ -14,13 +15,14 @@ pub struct FilePatcher {
 }
 
 impl FilePatcher {
-    pub fn new(path: &Path, query: &Query) -> Result<Option<FilePatcher>, std::io::Error> {
+    pub fn new(path: &Path, query: &Query) -> Result<Option<FilePatcher>> {
         let mut replacements = vec![];
-        let file = File::open(&path)?;
+        let file =
+            File::open(&path).with_context(|| format!("Could not open {}", path.display()))?;
         let reader = BufReader::new(file);
         let mut new_contents = String::new();
         for (num, chunk) in reader.split(b'\n').enumerate() {
-            let chunk = chunk?; // consume the io::error
+            let chunk = chunk.with_context(|| format!("Error while reading {}", path.display()))?;
             let line = String::from_utf8(chunk);
             if line.is_err() {
                 return Ok(None);
@@ -52,8 +54,9 @@ impl FilePatcher {
         &self.replacements
     }
 
-    pub fn run(&self) -> Result<(), std::io::Error> {
-        std::fs::write(&self.path, &self.new_contents)?;
+    pub fn run(&self) -> Result<()> {
+        std::fs::write(&self.path, &self.new_contents)
+            .with_context(|| format!("Could not write {}", self.path.display()))?;
         Ok(())
     }
 
