@@ -22,7 +22,7 @@ impl DirectoryPatcher {
         }
     }
 
-    pub fn patch(&mut self, query: &Query) -> Result<()> {
+    pub fn run(&mut self, query: &Query) -> Result<()> {
         let walker = self.build_walker();
         for entry in walker {
             let entry = entry.with_context(|| "Could not read directory entry")?;

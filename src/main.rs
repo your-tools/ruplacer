@@ -196,7 +196,7 @@ fn main() -> Result<()> {
         ignored_file_types,
     };
     let mut directory_patcher = ruplacer::DirectoryPatcher::new(path, settings);
-    directory_patcher.patch(&query)?;
+    directory_patcher.run(&query)?;
     let stats = directory_patcher.stats();
     if stats.num_replacements == 0 {
         eprintln!("{}: {}", "Error".bold().red(), "nothing found to replace");

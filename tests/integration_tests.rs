@@ -34,7 +34,7 @@ fn assert_not_replaced(path: &Path) {
 fn run_ruplacer(data_path: &Path, settings: Settings) -> DirectoryPatcher {
     let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), settings);
     directory_patcher
-        .patch(&query::substring("old", "new"))
+        .run(&query::substring("old", "new"))
         .expect("ruplacer failed");
     directory_patcher
 }
