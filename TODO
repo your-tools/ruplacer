@@ -1,2 +1,0 @@
-* Implement --colors=always|never|auto
-* Regexes (not just sub string). Maybe use `grep` crate
