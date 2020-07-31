@@ -23,7 +23,16 @@ impl DirectoryPatcher {
     }
 
     pub fn patch(&mut self, query: &Query) -> Result<()> {
-        self.walk(&query)
+        let walker = self.build_walker();
+        for entry in walker {
+            let entry = entry.with_context(|| "Could not read directory entry")?;
+            if let Some(file_type) = entry.file_type() {
+                if file_type.is_file() {
+                    self.patch_file(&entry.path(), &query)?;
+                }
+            }
+        }
+        Ok(())
     }
 
     pub fn stats(self) -> Stats {
@@ -63,18 +72,5 @@ impl DirectoryPatcher {
         let mut walk_builder = ignore::WalkBuilder::new(&self.path);
         walk_builder.types(types_matcher);
         walk_builder.build()
-    }
-
-    fn walk(&mut self, query: &Query) -> Result<()> {
-        let walker = self.build_walker();
-        for entry in walker {
-            let entry = entry.with_context(|| "Could not read directory entry")?;
-            if let Some(file_type) = entry.file_type() {
-                if file_type.is_file() {
-                    self.patch_file(&entry.path(), &query)?;
-                }
-            }
-        }
-        Ok(())
     }
 }
