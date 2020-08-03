@@ -10,6 +10,9 @@ keywords = ["ruplacer", "find", "grep", "command", "line"]
 categories = ["command-line-utilities"]
 repository = "https://github.com/TankerHQ/ruplacer"
 
+[package.metadata.deb]
+extended-description = "Find and replace text in source files"
+
 [dependencies]
 difference = "2.0"
 ignore = "0.4"
@@ -18,10 +21,8 @@ colored = "1.6"
 regex = "1"
 isatty = "0.1"
 Inflector = "0.11"
+anyhow = "1.0.32"
 
 
 [dev-dependencies]
 tempdir = "0.3"
-
-[package.metadata.deb]
-extended-description = "Find and replace text in source files"

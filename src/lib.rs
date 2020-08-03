@@ -1,5 +1,3 @@
-mod errors;
-pub use crate::errors::Error;
 mod directory_patcher;
 mod file_patcher;
 mod line_patcher;

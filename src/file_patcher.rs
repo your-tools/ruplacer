@@ -1,3 +1,4 @@
+use anyhow::{Context, Result};
 use colored::*;
 use difference::{Changeset, Difference};
 use std::fs::File;
@@ -14,17 +15,17 @@ pub struct FilePatcher {
 }
 
 impl FilePatcher {
-    pub fn new(path: &Path, query: &Query) -> Result<FilePatcher, std::io::Error> {
+    pub fn new(path: &Path, query: &Query) -> Result<Option<FilePatcher>> {
         let mut replacements = vec![];
-        let file = File::open(&path)?;
+        let file =
+            File::open(&path).with_context(|| format!("Could not open {}", path.display()))?;
         let reader = BufReader::new(file);
         let mut new_contents = String::new();
         for (num, chunk) in reader.split(b'\n').enumerate() {
-            let chunk = chunk?; // consume the io::error
+            let chunk = chunk.with_context(|| format!("Error while reading {}", path.display()))?;
             let line = String::from_utf8(chunk);
             if line.is_err() {
-                let io_error: std::io::Error = std::io::ErrorKind::InvalidData.into();
-                return Err(io_error);
+                return Ok(None);
             }
             let line = line.unwrap();
             let line_patcher = LinePatcher::new(&line);
@@ -42,19 +43,20 @@ impl FilePatcher {
             }
             new_contents.push_str("\n");
         }
-        Ok(FilePatcher {
+        Ok(Some(FilePatcher {
             replacements,
             path: path.to_path_buf(),
             new_contents,
-        })
+        }))
     }
 
     pub fn replacements(&self) -> &Vec<Replacement> {
         &self.replacements
     }
 
-    pub fn run(&self) -> Result<(), std::io::Error> {
-        std::fs::write(&self.path, &self.new_contents)?;
+    pub fn run(&self) -> Result<()> {
+        std::fs::write(&self.path, &self.new_contents)
+            .with_context(|| format!("Could not write {}", self.path.display()))?;
         Ok(())
     }
 
@@ -111,7 +113,9 @@ mod tests {
     #[test]
     fn test_compute_replacements() {
         let top_path = std::path::Path::new("tests/data/top.txt");
-        let file_patcher = FilePatcher::new(&top_path, &query::substring("old", "new")).unwrap();
+        let file_patcher = FilePatcher::new(&top_path, &query::substring("old", "new"))
+            .unwrap()
+            .unwrap();
         let replacements = file_patcher.replacements();
         assert_eq!(replacements.len(), 1);
         let actual_replacement = &replacements[0];
@@ -132,7 +136,7 @@ mod tests {
         let file_path = temp_dir.path().join("foo.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line\n").unwrap();
         let file_patcher = FilePatcher::new(&file_path, &query::substring("old", "new")).unwrap();
-        file_patcher.run().unwrap();
+        file_patcher.unwrap().run().unwrap();
         let actual = fs::read_to_string(&file_path).unwrap();
         let expected = "first line\nI say: new is nice\nlast line\n";
         assert_eq!(actual, expected);
