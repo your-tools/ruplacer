@@ -21,6 +21,8 @@ impl FilePatcher {
             File::open(&path).with_context(|| format!("Could not open {}", path.display()))?;
         let reader = BufReader::new(file);
         let mut new_contents = String::new();
+        // Note: not using lines() because we need to preserve the line endings
+        // when writing the file later on
         for (num, chunk) in reader.split(b'\n').enumerate() {
             let chunk = chunk.with_context(|| format!("Error while reading {}", path.display()))?;
             let line = String::from_utf8(chunk);
