@@ -1,6 +1,7 @@
 use anyhow::{anyhow, Error, Result};
 use colored::*;
 use isatty::stdout_isatty;
+use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::process;
 use structopt::StructOpt;
@@ -103,7 +104,7 @@ struct Options {
     color_when: Option<ColorWhen>,
 }
 
-fn regex_query_or_die(pattern: &str, replacement: &str, word: bool) -> ruplacer::query::Query {
+fn regex_query_or_die(pattern: &str, replacement: &str, word: bool) -> ruplacer::Query {
     let actual_pattern = if word {
         format!(r"\b({})\b", pattern)
     } else {
@@ -180,8 +181,6 @@ fn main() -> Result<()> {
     let color_when = &color_when.unwrap_or(ColorWhen::Auto);
     configure_color(&color_when);
 
-    let path = path.unwrap_or_else(|| Path::new(".").to_path_buf());
-
     let query = if no_regex {
         ruplacer::query::substring(&pattern, &replacement)
     } else if subvert {
@@ -195,6 +194,32 @@ fn main() -> Result<()> {
         selected_file_types,
         ignored_file_types,
     };
+
+    let path = path.unwrap_or_else(|| Path::new(".").to_path_buf());
+    if path.to_string_lossy() == "-" {
+        run_on_stdin(query)
+    } else {
+        run_on_directory(path, settings, query)
+    }
+}
+
+fn run_on_stdin(query: ruplacer::Query) -> Result<()> {
+    let stdin = std::io::stdin();
+    for line in stdin.lock().lines() {
+        let line = line?;
+        let patcher = ruplacer::LinePatcher::new(&line);
+        let replaced = patcher.replace(&query);
+        println!("{}", replaced);
+    }
+    Ok(())
+}
+
+fn run_on_directory(
+    path: PathBuf,
+    settings: ruplacer::Settings,
+    query: ruplacer::Query,
+) -> Result<()> {
+    let dry_run = settings.dry_run;
     let mut directory_patcher = ruplacer::DirectoryPatcher::new(path, settings);
     directory_patcher.run(&query)?;
     let stats = directory_patcher.stats();
