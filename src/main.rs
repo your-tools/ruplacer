@@ -63,6 +63,12 @@ struct Options {
     )]
     no_regex: bool,
 
+    #[structopt(long = "--hidden", help = "Also patch hidden files")]
+    hidden: bool,
+
+    #[structopt(long = "--ignored", help = "Also patch ignored files")]
+    ignored: bool,
+
     #[structopt(
         long = "--word-regex",
         short = "-w",
@@ -161,6 +167,8 @@ fn main() -> Result<()> {
         color_when,
         file_type_list,
         go,
+        hidden,
+        ignored,
         ignored_file_types,
         no_regex,
         path,
@@ -191,6 +199,8 @@ fn main() -> Result<()> {
 
     let settings = ruplacer::Settings {
         dry_run,
+        hidden,
+        ignored,
         selected_file_types,
         ignored_file_types,
     };
