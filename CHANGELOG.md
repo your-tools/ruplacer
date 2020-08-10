@@ -1,3 +1,18 @@
+# 0.5.0
+
+## New features
+
+* Implement `--hidden` and `--ignored` flags, to force patching of
+  hidden and ignored files, respectively.
+
+* If the last argument is `-`, read from stdin and write to stdout.
+
+## Internals
+
+* Switch to 2018 edition
+* Switch to GitHub Actions for CI
+* Switch to `anyhow` for error handling
+
 # 0.4.3
 
 * Bump smallvec
