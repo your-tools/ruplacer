@@ -217,9 +217,8 @@ fn run_on_stdin(query: ruplacer::Query) -> Result<()> {
     let stdin = std::io::stdin();
     for line in stdin.lock().lines() {
         let line = line?;
-        let patcher = ruplacer::LinePatcher::new(&line);
-        let replaced = patcher.replace(&query);
-        println!("{}", replaced);
+        let (_, new_line) = ruplacer::patch_line(&line, &query);
+        println!("{}", new_line);
     }
     Ok(())
 }

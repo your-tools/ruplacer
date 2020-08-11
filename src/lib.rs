@@ -6,6 +6,6 @@ mod settings;
 pub use settings::Settings;
 mod stats;
 pub use directory_patcher::DirectoryPatcher;
-pub use line_patcher::LinePatcher;
+pub use line_patcher::patch_line;
 pub use query::Query;
 pub use stats::Stats;
