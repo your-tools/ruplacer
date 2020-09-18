@@ -6,9 +6,22 @@
 
 # Ruplacer
 
-Find and replace text in source files.
+Find and replace text in source files:
 
-![ruplacer screenshot](https://dmerej.info/blog/pics/ruplacer.png)
+```
+$ ruplacer old new src/
+Patching src/a_dir/sub/foo.txt
+-- old is everywhere, old is old
+++ new is everywhere, new is new
+
+Patching src/top.txt
+-- old is nice
+++ new is nice
+
+Would perform 2 replacements on 2 matching files.
+Re-run ruplacer with --go to write these changes to disk
+```
+
 
 ## Installing with cargo
 
@@ -45,20 +58,9 @@ Ruplacer will then walk through every file in `<path>` while honoring `.gitignor
 
 Binary files and text files containing non-UTF8 characters will be skipped. Then for
 every remaining file, it will read the contents, replace all lines matching the
-pattern by the replacement, and print the difference:
+pattern by the replacement, and print the difference.
 
-```
-$ replacer old new src/
-Patching src/a_dir/sub/foo.txt
--- old is everywhere, old is old
-++ new is everywhere, new is new
-
-Patching src/top.txt
--- old is nice
-++ new is nice
-```
-
-If you are OK with the replacements, re-run `ruplacer` with the `--go` option to actually write the files.
+If you are OK with the replacements, re-run `ruplacer` with the `--go` option to actually write the changes to disk.
 
 ## Regex
 
