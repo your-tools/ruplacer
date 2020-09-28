@@ -47,7 +47,7 @@ impl Replacements {
         let chars: Vec<_> = input.chars().collect();
         let mut i = 0;
         let mut res = String::new();
-        while i < input.len() {
+        while i < chars.len() {
             if let Some(ReplaceValue { end_pos, new, .. }) = self.values.get(&i) {
                 res.push_str(new);
                 i = *end_pos;
@@ -64,7 +64,7 @@ impl Replacements {
         print!("{}", "-- ".red());
         let chars: Vec<_> = input.chars().collect();
         let mut i = 0;
-        while i < input.len() {
+        while i < chars.len() {
             if let Some(ReplaceValue { end_pos, .. }) = self.values.get(&i) {
                 let old = &input[i..*end_pos];
                 print!("{}", &old.red().underline());
@@ -80,7 +80,7 @@ impl Replacements {
         print!("{}", "++ ".green());
         let chars: Vec<_> = input.chars().collect();
         let mut i = 0;
-        while i < input.len() {
+        while i < chars.len() {
             if let Some(ReplaceValue { end_pos, new, .. }) = self.values.get(&i) {
                 print!("{}", new.green().underline());
                 i = *end_pos;
