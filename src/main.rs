@@ -47,7 +47,7 @@ EXAMPLES:
 "
 )]
 struct Options {
-    #[structopt(long = "go")]
+    #[structopt(long = "go", help = "Write the changes to the filesystem")]
     go: bool,
 
     #[structopt(help = "The pattern to search for")]
