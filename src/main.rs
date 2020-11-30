@@ -37,6 +37,11 @@ EXAMPLES:
     Replace 'LastName, FirstName' with 'FirstName LastName'
     $ ruplacer '(\\w+), (\\w+)' '$2 $1'
 
+    Replace '--foo-bar' with '--spam-eggs':
+    Note the use of '--' because the pattern and the replacement
+    start with two dashes:
+    $ ruplacer -- --foo-bar --spam-eggs
+
     Replace 'FooBar' with 'SpamEggs', 'foo_bar' with 'spam_eggs', ...
     $ ruplacer --subvert FooBar SpamEggs
 "
