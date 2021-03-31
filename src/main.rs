@@ -85,7 +85,7 @@ struct Options {
     #[structopt(
         short = "t",
         long = "type",
-        help = "Only search files matching <file_type>",
+        help = "Only search files matching <file_type> or glob pattern.",
         multiple = true,
         number_of_values = 1
     )]
@@ -94,7 +94,7 @@ struct Options {
     #[structopt(
         short = "T",
         long = "type-not",
-        help = "Ignore files matching <file_type>",
+        help = "Ignore files matching <file_type> or glob pattern.",
         multiple = true,
         number_of_values = 1
     )]
