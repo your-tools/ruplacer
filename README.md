@@ -121,10 +121,15 @@ Inspired by [ripgrep](https://github.com/BurntSushi/ripgrep), you can also selec
 $ ruplacer old new --type cpp
 # Select only *.foo files
 $ ruplacer old new --type *.foo
+# Select only files that match foo*bar.c
+$ ruplacer old new --type foo*bar.c
+
 # Ignore all js files
 $ ruplacer old new --type-not js
 # Ignore all *.bar files
 $ ruplacer old new --type-not *.bar
+# Ignore all files that match foo*bar.c
+$ ruplacer old new --type-not foo*bar.c
 ```
 
 Each "file type" is just a list of glob pattern. For instance: the `cpp` file type matches `*.C`, `*.H`, `*.cc`, `*.cpp` and so on ...
