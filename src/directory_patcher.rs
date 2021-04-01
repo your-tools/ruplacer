@@ -62,8 +62,10 @@ impl DirectoryPatcher {
         types_builder.add_defaults();
         let mut cnt: u32 = 0;
         for t in &self.settings.selected_file_types {
+            // Check if filter is file type or glob pattern
             if t.contains("*") {
                 let new_type = format!("type{}", cnt);
+                // Note: .add(name, glob) only returns error with wrong name, hence unwrap()
                 types_builder.add(&new_type, t).unwrap();
                 types_builder.select(&new_type);
                 cnt += 1;
@@ -72,8 +74,10 @@ impl DirectoryPatcher {
             }
         }
         for t in &self.settings.ignored_file_types {
+            // Check if filter is file type or glob pattern
             if t.contains("*") {
                 let new_type = format!("type{}", cnt);
+                // Note: .add(name, glob) only returns error with wrong name, hence unwrap()
                 types_builder.add(&new_type, t).unwrap();
                 types_builder.negate(&new_type);
                 cnt += 1;
