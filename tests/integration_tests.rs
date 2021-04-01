@@ -9,8 +9,14 @@ use ruplacer::Settings;
 
 fn setup_test(tmp_dir: &TempDir) -> PathBuf {
     let tmp_path = tmp_dir.path();
+    #[cfg(target_os="linux")]
     let status = Command::new("cp")
         .args(&["-R", "tests/data", &tmp_path.to_string_lossy()])
+        .status()
+        .expect("Failed to execute process");
+    #[cfg(target_os="windows")]
+    let status = Command::new("xcopy")
+        .args(&["/E", "/I", "tests\\data", &tmp_path.join("data").to_string_lossy()])
         .status()
         .expect("Failed to execute process");
     assert!(status.success());
@@ -160,6 +166,51 @@ fn test_select_file_types() {
 }
 
 #[test]
+fn test_select_file_types_by_glob_pattern_1() {
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+    add_python_file(&data_path);
+
+    let settings = Settings {
+        selected_file_types: vec!["*.py".to_string()],
+        ..Default::default()
+    };
+    let patcher = run_ruplacer(&data_path, settings);
+
+    let stats = patcher.stats();
+    assert_eq!(stats.matching_files, 1);
+}
+
+#[test]
+fn test_select_file_types_by_glob_pattern_2() {
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+    add_python_file(&data_path);
+
+    let settings = Settings {
+        selected_file_types: vec!["f*.py".to_string()],
+        ..Default::default()
+    };
+    let patcher = run_ruplacer(&data_path, settings);
+
+    let stats = patcher.stats();
+    assert_eq!(stats.matching_files, 1);
+}
+
+#[test]
+#[should_panic]
+fn test_select_file_types_by_wrong_glob_pattern() {
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+
+    let settings = Settings {
+        selected_file_types: vec!["f**.py".to_string()],
+        ..Default::default()
+    };
+    run_ruplacer(&data_path, settings);
+}
+
+#[test]
 fn test_ignore_file_types() {
     let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
     let data_path = setup_test(&tmp_dir);
@@ -171,4 +222,44 @@ fn test_ignore_file_types() {
     run_ruplacer(&data_path, settings);
 
     assert_not_replaced(&py_path);
+}
+
+#[test]
+fn test_ignore_file_types_by_glob_pattern_1() {
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+    let py_path = add_python_file(&data_path);
+    let settings = Settings {
+        ignored_file_types: vec!["*.py".to_string()],
+        ..Default::default()
+    };
+    run_ruplacer(&data_path, settings);
+
+    assert_not_replaced(&py_path);
+}
+
+#[test]
+fn test_ignore_file_types_by_glob_pattern_2() {
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+    let py_path = add_python_file(&data_path);
+    let settings = Settings {
+        ignored_file_types: vec!["f*.py".to_string()],
+        ..Default::default()
+    };
+    run_ruplacer(&data_path, settings);
+
+    assert_not_replaced(&py_path);
+}
+
+#[test]
+#[should_panic]
+fn test_ignore_file_types_by_wrong_glob_pattern() {
+    let tmp_dir = TempDir::new("test-ruplacer").expect("failed to create temp dir");
+    let data_path = setup_test(&tmp_dir);
+    let settings = Settings {
+        ignored_file_types: vec!["**.py".to_string()],
+        ..Default::default()
+    };
+    run_ruplacer(&data_path, settings);
 }
