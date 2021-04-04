@@ -9,7 +9,7 @@ use ruplacer::Settings;
 
 fn setup_test(tmp_dir: &TempDir) -> PathBuf {
     let tmp_path = tmp_dir.path();
-    #[cfg(target_os = "linux")]
+    #[cfg(not(target_os = "windows"))]
     let status = Command::new("cp")
         .args(&["-R", "tests/data", &tmp_path.to_string_lossy()])
         .status()
