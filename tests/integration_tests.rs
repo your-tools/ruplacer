@@ -9,14 +9,19 @@ use ruplacer::Settings;
 
 fn setup_test(tmp_dir: &TempDir) -> PathBuf {
     let tmp_path = tmp_dir.path();
-    #[cfg(target_os="linux")]
+    #[cfg(not(target_os = "windows"))]
     let status = Command::new("cp")
         .args(&["-R", "tests/data", &tmp_path.to_string_lossy()])
         .status()
         .expect("Failed to execute process");
-    #[cfg(target_os="windows")]
+    #[cfg(target_os = "windows")]
     let status = Command::new("xcopy")
-        .args(&["/E", "/I", "tests\\data", &tmp_path.join("data").to_string_lossy()])
+        .args(&[
+            "/E",
+            "/I",
+            "tests\\data",
+            &tmp_path.join("data").to_string_lossy(),
+        ])
         .status()
         .expect("Failed to execute process");
     assert!(status.success());

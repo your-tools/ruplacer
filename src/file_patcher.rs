@@ -43,7 +43,7 @@ impl FilePatcher {
             } else {
                 new_contents.push_str(&line);
             }
-            new_contents.push_str("\n");
+            new_contents.push('\n');
         }
         Ok(Some(FilePatcher {
             replacements,

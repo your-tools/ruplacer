@@ -234,7 +234,10 @@ fn run_on_directory(
     directory_patcher.run(&query)?;
     let stats = directory_patcher.stats();
     if stats.num_replacements == 0 {
-        eprintln!("{}: {}", "Error".bold().red(), "nothing found to replace");
+        #[allow(clippy::print_literal)]
+        {
+            eprintln!("{}: {}", "Error".bold().red(), "nothing found to replace");
+        }
         process::exit(2);
     }
     print_stats(&stats, dry_run);
