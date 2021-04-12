@@ -134,7 +134,7 @@ fn test_can_replace_ignored_files() {
     run_ruplacer(&data_path, settings);
 
     let ignored_path = data_path.join("ignore.txt");
-    assert_not_replaced(&ignored_path);
+    assert_replaced(&ignored_path);
 }
 
 #[test]

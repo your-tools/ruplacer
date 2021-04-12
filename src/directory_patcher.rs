@@ -92,8 +92,8 @@ impl DirectoryPatcher {
         walk_builder.types(types_matcher);
         // Note: the walk_builder configures the "ignore" settings of the Walker,
         // hence the negations
-        if !self.settings.ignored {
-            walk_builder.ignore(true);
+        if self.settings.ignored {
+            walk_builder.ignore(false);
         }
         if self.settings.hidden {
             walk_builder.hidden(false);
