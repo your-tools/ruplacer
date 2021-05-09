@@ -12,6 +12,7 @@
 * Switch to 2018 edition
 * Switch to GitHub Actions for CI
 * Switch to `anyhow` for error handling
+* Move out of TankerHQ GitHub organization
 
 # 0.4.3
 
