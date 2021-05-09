@@ -1,14 +1,14 @@
 [package]
 name = "ruplacer"
 version = "0.4.3"
-authors = ["Dimitri Merejkowsky <d.merej@gmail.com>"]
+authors = ["Dimitri Merejkowsky <dimitri@dmerej.info>"]
 description = "Find and replace text in source files"
 license = "BSD-3-Clause"
 readme = "README.md"
 edition = "2018"
 keywords = ["ruplacer", "find", "grep", "command", "line"]
 categories = ["command-line-utilities"]
-repository = "https://github.com/TankerHQ/ruplacer"
+repository = "https://github.com/dmerejkowsky/ruplacer"
 
 [package.metadata.deb]
 extended-description = "Find and replace text in source files"

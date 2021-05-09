@@ -1,8 +1,4 @@
-<a href="#readme"><img src="https://tanker.io/images/github-logo.png" alt="Tanker logo" width="180" /></a>
-
 [![crates.io image](https://img.shields.io/crates/v/ruplacer.svg)](https://crates.io/crates/ruplacer)
-[![Build](https://img.shields.io/travis/TankerHQ/ruplacer.svg?branch=master)](https://travis-ci.org/TankerHQ/ruplacer)
-[![Coverage](https://img.shields.io/codecov/c/github/TankerHQ/ruplacer.svg?label=Coverage)](https://codecov.io/gh/TankerHQ/ruplacer)
 
 # Ruplacer
 
@@ -22,6 +18,13 @@ Would perform 2 replacements on 2 matching files.
 Re-run ruplacer with --go to write these changes to disk
 ```
 
+## Note
+
+This project was originally hosted on the
+[TankerHQ](https://github.com/TankerHQ) GitHub organization, which was
+my employer from 2016 to 2021. They kindly agreed to give me back ownership
+of this project. Thanks!
+
 
 ## Installing with cargo
 
@@ -36,7 +39,7 @@ cargo install ruplacer
 ## Alternative installation methods
 
 * Pre-compiled binaries for Linux, macOS, and Windows are available as [assets of the latest release](
-https://github.com/TankerHQ/ruplacer/releases/tag/v0.4.3).
+https://github.com/dmerejkowsky/ruplacer/releases/tag/v0.4.3).
 
 * `ruplacer` can also be installed from `homebrew`:
 
