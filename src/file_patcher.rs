@@ -8,14 +8,14 @@ use std::path::{Path, PathBuf};
 use crate::line_patcher::LinePatcher;
 use crate::query::Query;
 
-pub struct FilePatcher {
-    replacements: Vec<Replacement>,
+pub struct FilePatcher<'a> {
+    replacements: Vec<Replacement<'a>>,
     path: PathBuf,
     new_contents: String,
 }
 
-impl FilePatcher {
-    pub fn new(path: &Path, query: &Query) -> Result<Option<FilePatcher>> {
+impl<'a> FilePatcher<'a> {
+    pub fn new(path: &Path, query: &'a Query) -> Result<Option<FilePatcher<'a>>> {
         let mut replacements = vec![];
         let file =
             File::open(&path).with_context(|| format!("Could not open {}", path.display()))?;
@@ -36,7 +36,8 @@ impl FilePatcher {
                 let replacement = Replacement {
                     line_no: num + 1,
                     old: line,
-                    new: new_line.clone(),
+                    new: new_line.to_string(),
+                    query: query.description(),
                 };
                 replacements.push(replacement);
                 new_contents.push_str(&new_line);
@@ -77,14 +78,27 @@ impl FilePatcher {
 }
 
 #[derive(PartialEq, Eq, Debug)]
-pub struct Replacement {
+pub struct Replacement<'a> {
     line_no: usize,
     old: String,
     new: String,
+    query: (&'a str, &'a str),
 }
 
-impl Replacement {
+impl<'a> Replacement<'a> {
     fn print_self(&self) {
+        let old_len = self.old.len();
+        let new_len = self.new.len();
+        // No point in trying to display the full diff, it won't fit in the terminal
+        // Plus, Changeset::new tries to allocate old_len * new_len
+        if old_len >= 300 || new_len >= 300 {
+            self.print_short_patch()
+        } else {
+            self.print_full_patch()
+        }
+    }
+
+    fn print_full_patch(&self) {
         let changeset = Changeset::new(&self.old, &self.new, "");
         print!("{} ", "--".red());
         for diff in &changeset.diffs {
@@ -104,6 +118,12 @@ impl Replacement {
             }
         }
     }
+
+    fn print_short_patch(&self) {
+        let (old_desc, new_desc) = &self.query;
+        println!("{} {}", "--".red(), old_desc);
+        println!("{} {}", "++".green(), new_desc);
+    }
 }
 
 #[cfg(test)]
@@ -115,9 +135,8 @@ mod tests {
     #[test]
     fn test_compute_replacements() {
         let top_path = std::path::Path::new("tests/data/top.txt");
-        let file_patcher = FilePatcher::new(&top_path, &query::substring("old", "new"))
-            .unwrap()
-            .unwrap();
+        let query = query::substring("old", "new");
+        let file_patcher = FilePatcher::new(&top_path, &query).unwrap().unwrap();
         let replacements = file_patcher.replacements();
         assert_eq!(replacements.len(), 1);
         let actual_replacement = &replacements[0];
@@ -137,7 +156,8 @@ mod tests {
         let temp_dir = tempdir::TempDir::new("test-ruplacer").unwrap();
         let file_path = temp_dir.path().join("foo.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line\n").unwrap();
-        let file_patcher = FilePatcher::new(&file_path, &query::substring("old", "new")).unwrap();
+        let query = query::substring("old", "new");
+        let file_patcher = FilePatcher::new(&file_path, &query).unwrap();
         file_patcher.unwrap().run().unwrap();
         let actual = fs::read_to_string(&file_path).unwrap();
         let expected = "first line\nI say: new is nice\nlast line\n";
@@ -152,6 +172,7 @@ mod tests {
             line_no: 1,
             old: "trustchain_creation: 0".to_owned(),
             new: "blockchain_creation: 0".to_owned(),
+            query: ("trustchain", "blockchain"),
         };
         replacement.print_self();
     }
