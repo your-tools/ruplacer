@@ -1,3 +1,7 @@
+# 0.6.0
+
+* Fix panic when using incorrect globs f6or file and type selections.
+
 # 0.5.0
 
 ## New features
