@@ -1,11 +1,11 @@
 mod directory_patcher;
 mod file_patcher;
-mod line_patcher;
 pub mod query;
+mod replacer;
 mod settings;
 pub use settings::Settings;
 mod stats;
+pub use crate::replacer::replace;
 pub use directory_patcher::DirectoryPatcher;
-pub use line_patcher::LinePatcher;
 pub use query::Query;
 pub use stats::Stats;
