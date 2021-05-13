@@ -67,11 +67,18 @@ impl<'a> Replacement<'a> {
     pub fn print_self(&self, prefix: &str) {
         let red_underline = { |x: &str| x.red().underline() };
         let input_fragments: Vec<_> = self.fragments.into_iter().map(|x| &x.0).collect();
-        Self::print_fragments(prefix, red_underline, self.input, &input_fragments);
+        let red_prefix = format!("{}{}", prefix, "- ".red());
+        Self::print_fragments(&red_prefix, red_underline, self.input, &input_fragments);
 
         let green_underline = { |x: &str| x.green().underline() };
+        let green_prefix = format!("{}{}", prefix, "+ ".green());
         let output_fragments: Vec<_> = self.fragments.into_iter().map(|x| &x.1).collect();
-        Self::print_fragments(prefix, green_underline, &self.output, &output_fragments);
+        Self::print_fragments(
+            &green_prefix,
+            green_underline,
+            &self.output,
+            &output_fragments,
+        );
     }
 
     fn print_fragments<C>(prefix: &str, color: C, line: &str, fragments: &[&Fragment])
