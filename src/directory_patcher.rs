@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use crate::file_patcher::FilePatcher;
 use crate::query::Query;
@@ -17,7 +17,7 @@ use crate::stats::Stats;
 ///     .. Default::default()
 /// };
 /// let path = PathBuf::from("tests/data");
-/// let mut directory_patcher = DirectoryPatcher::new(path, settings);
+/// let mut directory_patcher = DirectoryPatcher::new(&path, &settings);
 ///
 /// let query = Query::substring("old", "new");
 /// directory_patcher.run(&query).unwrap();
@@ -26,14 +26,14 @@ use crate::stats::Stats;
 /// ```
 // Note: keep the dry_run: true in the doc test above or the integration test
 // will fail ...
-pub struct DirectoryPatcher {
-    path: PathBuf,
-    settings: Settings,
+pub struct DirectoryPatcher<'a> {
+    path: &'a Path,
+    settings: &'a Settings,
     stats: Stats,
 }
 
-impl DirectoryPatcher {
-    pub fn new(path: PathBuf, settings: Settings) -> DirectoryPatcher {
+impl<'a> DirectoryPatcher<'a> {
+    pub fn new(path: &'a Path, settings: &'a Settings) -> DirectoryPatcher<'a> {
         let stats = Stats::default();
         DirectoryPatcher {
             path,

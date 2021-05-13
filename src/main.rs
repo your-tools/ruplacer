@@ -238,7 +238,7 @@ fn run_on_directory(
     query: ruplacer::Query,
 ) -> Result<()> {
     let dry_run = settings.dry_run;
-    let mut directory_patcher = ruplacer::DirectoryPatcher::new(path, settings);
+    let mut directory_patcher = ruplacer::DirectoryPatcher::new(&path, &settings);
     directory_patcher.run(&query)?;
     let stats = directory_patcher.stats();
     if stats.num_replacements() == 0 {
