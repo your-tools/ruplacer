@@ -22,7 +22,7 @@ use crate::stats::Stats;
 /// let query = Query::substring("old", "new");
 /// directory_patcher.run(&query).unwrap();
 /// let stats = directory_patcher.stats();
-/// println!("Found {} matches", stats.num_replacements());
+/// println!("Found {} matching lines", stats.matching_lines());
 /// ```
 // Note: keep the dry_run: true in the doc test above or the integration test
 // will fail ...
@@ -70,7 +70,8 @@ impl<'a> DirectoryPatcher<'a> {
         if num_replacements != 0 {
             println!();
         }
-        self.stats.update(num_replacements);
+        let num_lines = file_patcher.num_lines();
+        self.stats.update(num_lines, num_replacements);
         if self.settings.dry_run {
             return Ok(());
         }

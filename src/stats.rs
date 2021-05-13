@@ -4,13 +4,15 @@ use inflector::string::pluralize::to_plural;
 /// Statistics about a run of DirectoryPatcher
 pub struct Stats {
     matching_files: usize,
-    num_replacements: usize,
+    matching_lines: usize,
+    total_replacements: usize,
 }
 
 impl Stats {
-    pub(crate) fn update(&mut self, num_replacements: usize) {
+    pub(crate) fn update(&mut self, lines: usize, replacements: usize) {
         self.matching_files += 1;
-        self.num_replacements += num_replacements;
+        self.matching_lines += lines;
+        self.total_replacements += replacements;
     }
 
     /// Number of matching files
@@ -19,8 +21,13 @@ impl Stats {
     }
 
     /// Total number of lines that were replaced
-    pub fn num_replacements(&self) -> usize {
-        self.num_replacements
+    pub fn matching_lines(&self) -> usize {
+        self.matching_lines
+    }
+
+    /// Total number of lines that were replaced
+    pub fn total_replacements(&self) -> usize {
+        self.total_replacements
     }
 }
 
@@ -35,11 +42,11 @@ fn pluralize(input: &str, num: usize) -> String {
 impl std::fmt::Display for Stats {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         let file_string = pluralize("file", self.matching_files);
-        let replacements_string = pluralize("replacement", self.num_replacements);
+        let replacements_string = pluralize("replacement", self.total_replacements);
         write!(
             f,
             "{} {} on {} matching {}",
-            self.num_replacements, replacements_string, self.matching_files, file_string
+            self.total_replacements, replacements_string, self.matching_files, file_string
         )
     }
 }
@@ -52,14 +59,16 @@ mod tests {
     fn test_stats_to_string() {
         let stats = Stats {
             matching_files: 2,
-            num_replacements: 4,
+            total_replacements: 4,
+            matching_lines: 1,
         };
         let actual = stats.to_string();
         assert_eq!(actual, "4 replacements on 2 matching files");
 
         let stats = Stats {
             matching_files: 1,
-            num_replacements: 2,
+            total_replacements: 2,
+            matching_lines: 1,
         };
         let actual = stats.to_string();
         assert_eq!(actual, "2 replacements on 1 matching file");
