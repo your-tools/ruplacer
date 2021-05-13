@@ -53,6 +53,10 @@ impl<'a> Replacement<'a> {
         &self.output
     }
 
+    pub(crate) fn num_fragments(&self) -> usize {
+        self.fragments.len()
+    }
+
     /// Print the replacement as two lines (red then green)
     /// ```
     /// use ruplacer::{Query, replace};
@@ -113,6 +117,10 @@ struct Fragments(Vec<(Fragment, Fragment)>);
 impl Fragments {
     fn new() -> Self {
         Self(vec![])
+    }
+
+    fn len(&self) -> usize {
+        self.0.len()
     }
 
     fn is_empty(&self) -> bool {

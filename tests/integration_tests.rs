@@ -73,7 +73,7 @@ fn test_stats() {
     let settings = Settings::default();
     let stats = run_ruplacer(&data_path, settings).unwrap();
     assert!(stats.matching_files() > 1);
-    assert!(stats.num_replacements() > 1);
+    assert!(stats.total_replacements() > 1);
 }
 
 #[test]

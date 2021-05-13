@@ -241,7 +241,7 @@ fn run_on_directory(
     let mut directory_patcher = ruplacer::DirectoryPatcher::new(&path, &settings);
     directory_patcher.run(&query)?;
     let stats = directory_patcher.stats();
-    if stats.num_replacements() == 0 {
+    if stats.total_replacements() == 0 {
         #[allow(clippy::print_literal)]
         {
             eprintln!("{}: {}", "Error".bold().red(), "nothing found to replace");

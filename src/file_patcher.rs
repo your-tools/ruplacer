@@ -10,11 +10,13 @@ pub struct FilePatcher {
     path: PathBuf,
     new_contents: String,
     num_replacements: usize,
+    num_lines: usize,
 }
 
 impl FilePatcher {
     pub fn new(path: &Path, query: &Query) -> Result<Option<FilePatcher>> {
         let mut num_replacements = 0;
+        let mut num_lines = 0;
         let file =
             File::open(&path).with_context(|| format!("Could not open {}", path.display()))?;
         let reader = BufReader::new(file);
@@ -32,7 +34,8 @@ impl FilePatcher {
             match replacement {
                 None => new_contents.push_str(&line),
                 Some(replacement) => {
-                    num_replacements += 1;
+                    num_lines += 1;
+                    num_replacements += replacement.num_fragments();
                     let lineno = num + 1;
                     let prefix = format!("{}:{} ", path.display(), lineno);
                     let new_line = replacement.output();
@@ -45,12 +48,17 @@ impl FilePatcher {
         Ok(Some(FilePatcher {
             path: path.to_path_buf(),
             new_contents,
+            num_lines,
             num_replacements,
         }))
     }
 
     pub(crate) fn num_replacements(&self) -> usize {
         self.num_replacements
+    }
+
+    pub(crate) fn num_lines(&self) -> usize {
+        self.num_lines
     }
 
     pub fn run(&self) -> Result<()> {
