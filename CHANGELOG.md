@@ -6,6 +6,10 @@
 
 ## New features
 
+
+* Add support for glob pattern for the `-t, type` and `-T, --type-not`
+  options. Patch by @ndtoan96
+
 * Implement `--hidden` and `--ignored` flags, to force patching of
   hidden and ignored files, respectively.
 
