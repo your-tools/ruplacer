@@ -5,9 +5,9 @@ use std::process::Command;
 use anyhow::Result;
 use tempdir::TempDir;
 
-use ruplacer::DirectoryPatcher;
 use ruplacer::Query;
 use ruplacer::Settings;
+use ruplacer::{DirectoryPatcher, Stats};
 
 fn setup_test(tmp_dir: &TempDir) -> PathBuf {
     let tmp_path = tmp_dir.path();
@@ -44,10 +44,10 @@ fn assert_not_replaced(path: &Path) {
     assert!(contents.contains("old"));
 }
 
-fn run_ruplacer(data_path: &Path, settings: Settings) -> Result<DirectoryPatcher> {
-    let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), settings);
+fn run_ruplacer(data_path: &Path, settings: Settings) -> Result<Stats> {
+    let mut directory_patcher = DirectoryPatcher::new(&data_path, &settings);
     directory_patcher.run(&Query::substring("old", "new"))?;
-    Ok(directory_patcher)
+    Ok(directory_patcher.stats())
 }
 
 #[test]
@@ -71,8 +71,7 @@ fn test_stats() {
     let data_path = setup_test(&tmp_dir);
 
     let settings = Settings::default();
-    let patcher = run_ruplacer(&data_path, settings).unwrap();
-    let stats = patcher.stats();
+    let stats = run_ruplacer(&data_path, settings).unwrap();
     assert!(stats.matching_files() > 1);
     assert!(stats.num_replacements() > 1);
 }
@@ -164,9 +163,8 @@ fn test_select_file_types() {
         selected_file_types: vec!["py".to_string()],
         ..Default::default()
     };
-    let patcher = run_ruplacer(&data_path, settings).unwrap();
+    let stats = run_ruplacer(&data_path, settings).unwrap();
 
-    let stats = patcher.stats();
     assert_eq!(stats.matching_files(), 1);
 }
 
@@ -180,9 +178,8 @@ fn test_select_file_types_by_glob_pattern_1() {
         selected_file_types: vec!["*.py".to_string()],
         ..Default::default()
     };
-    let patcher = run_ruplacer(&data_path, settings).unwrap();
+    let stats = run_ruplacer(&data_path, settings).unwrap();
 
-    let stats = patcher.stats();
     assert_eq!(stats.matching_files(), 1);
 }
 
@@ -196,9 +193,8 @@ fn test_select_file_types_by_glob_pattern_2() {
         selected_file_types: vec!["f*.py".to_string()],
         ..Default::default()
     };
-    let patcher = run_ruplacer(&data_path, settings).unwrap();
+    let stats = run_ruplacer(&data_path, settings).unwrap();
 
-    let stats = patcher.stats();
     assert_eq!(stats.matching_files(), 1);
 }
 
