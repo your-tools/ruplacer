@@ -5,37 +5,48 @@ use inflector::cases::screamingsnakecase::*;
 use inflector::cases::snakecase::*;
 use inflector::cases::traincase::*;
 
+/// A replacement Query
 pub enum Query {
+    /// Substitute `old` with `new`
     Substring(String, String),
+    /// Replace the parts matching the regex with `replacement`
     Regex(regex::Regex, String),
-    // A list like [(foo_bar, spam_eggs), (FooBar, SpamEggs) ...)]
+    /// Replace all instances of `pattern` with `replacement`, by
+    /// using case conversion methods.
+    /// This allows replacing FooBar with SpamEggs and foo_bar with spam_eggs
+    /// using only one query
     Subvert(Vec<(String, String)>),
 }
 
-pub fn substring(old: &str, new: &str) -> Query {
-    Query::Substring(old.to_string(), new.to_string())
-}
-
-pub fn from_regex(re: regex::Regex, replacement: &str) -> Query {
-    Query::Regex(re, replacement.to_string())
-}
-
-pub fn subvert(pattern: &str, replacement: &str) -> Query {
-    fn to_ugly_case(input: &str) -> String {
-        to_train_case(input).replace("-", "_")
+impl Query {
+    /// Constructor for the Substring variant
+    pub fn substring(old: &str, new: &str) -> Self {
+        Self::Substring(old.to_string(), new.to_string())
     }
 
-    let mut items = vec![];
-    for func in &[
-        to_camel_case,
-        to_kebab_case,
-        to_pascal_case,
-        to_screaming_snake_case,
-        to_snake_case,
-        to_train_case,
-        to_ugly_case,
-    ] {
-        items.push((func(pattern), func(replacement)));
+    /// Constructor for the Regex variant
+    pub fn regex(re: regex::Regex, replacement: &str) -> Self {
+        Self::Regex(re, replacement.to_string())
     }
-    Query::Subvert(items)
+
+    /// Constructor for the Subvert variant
+    pub fn subvert(pattern: &str, replacement: &str) -> Self {
+        fn to_ugly_case(input: &str) -> String {
+            to_train_case(input).replace("-", "_")
+        }
+
+        let mut items = vec![];
+        for func in &[
+            to_camel_case,
+            to_kebab_case,
+            to_pascal_case,
+            to_screaming_snake_case,
+            to_snake_case,
+            to_train_case,
+            to_ugly_case,
+        ] {
+            items.push((func(pattern), func(replacement)));
+        }
+        Self::Subvert(items)
+    }
 }

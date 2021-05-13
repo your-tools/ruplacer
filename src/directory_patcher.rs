@@ -7,6 +7,25 @@ use crate::settings::Settings;
 use crate::stats::Stats;
 
 #[derive(Debug)]
+/// Used to run replacement query on every text file present in a given path
+/// ```rust
+/// use ruplacer::{DirectoryPatcher, Query, Settings, Stats};
+/// use std::path::PathBuf;
+///
+/// let settings = Settings{
+///     dry_run: true,
+///     .. Default::default()
+/// };
+/// let path = PathBuf::from("tests/data");
+/// let mut directory_patcher = DirectoryPatcher::new(path, settings);
+///
+/// let query = Query::substring("old", "new");
+/// directory_patcher.run(&query).unwrap();
+/// let stats = directory_patcher.stats();
+/// println!("Found {} matches", stats.num_replacements());
+/// ```
+// Note: keep the dry_run: true in the doc test above or the integration test
+// will fail ...
 pub struct DirectoryPatcher {
     path: PathBuf,
     settings: Settings,
@@ -23,6 +42,7 @@ impl DirectoryPatcher {
         }
     }
 
+    /// Run the given query on the selected files in self.path
     pub fn run(&mut self, query: &Query) -> Result<()> {
         let walker = self.build_walker()?;
         for entry in walker {
@@ -40,7 +60,7 @@ impl DirectoryPatcher {
         self.stats
     }
 
-    pub fn patch_file(&mut self, entry: &Path, query: &Query) -> Result<()> {
+    pub(crate) fn patch_file(&mut self, entry: &Path, query: &Query) -> Result<()> {
         let file_patcher = FilePatcher::new(entry, &query)?;
         let file_patcher = match file_patcher {
             None => return Ok(()),

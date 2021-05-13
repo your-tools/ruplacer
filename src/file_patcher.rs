@@ -63,7 +63,7 @@ impl FilePatcher {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::query;
+    use crate::Query;
     use std::fs;
 
     #[test]
@@ -71,7 +71,7 @@ mod tests {
         let temp_dir = tempdir::TempDir::new("test-ruplacer").unwrap();
         let file_path = temp_dir.path().join("foo.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line\n").unwrap();
-        let query = query::substring("old", "new");
+        let query = Query::substring("old", "new");
         let file_patcher = FilePatcher::new(&file_path, &query).unwrap();
         file_patcher.unwrap().run().unwrap();
         let actual = fs::read_to_string(&file_path).unwrap();

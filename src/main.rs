@@ -127,7 +127,7 @@ fn regex_query_or_die(pattern: &str, replacement: &str, word: bool) -> ruplacer:
         process::exit(1);
     }
     let re = re.unwrap();
-    ruplacer::query::from_regex(re, replacement)
+    ruplacer::Query::regex(re, replacement)
 }
 
 // Set proper env variable so that the colored crate behaves properly.
@@ -195,9 +195,9 @@ fn main() -> Result<()> {
     configure_color(&color_when);
 
     let query = if no_regex {
-        ruplacer::query::substring(&pattern, &replacement)
+        ruplacer::Query::substring(&pattern, &replacement)
     } else if subvert {
-        ruplacer::query::subvert(&pattern, &replacement)
+        ruplacer::Query::subvert(&pattern, &replacement)
     } else {
         regex_query_or_die(&pattern, &replacement, word_regex)
     };
@@ -241,7 +241,7 @@ fn run_on_directory(
     let mut directory_patcher = ruplacer::DirectoryPatcher::new(path, settings);
     directory_patcher.run(&query)?;
     let stats = directory_patcher.stats();
-    if stats.num_replacements == 0 {
+    if stats.num_replacements() == 0 {
         #[allow(clippy::print_literal)]
         {
             eprintln!("{}: {}", "Error".bold().red(), "nothing found to replace");
