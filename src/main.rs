@@ -211,7 +211,7 @@ fn main() -> Result<()> {
     };
 
     let path = path.unwrap_or_else(|| Path::new(".").to_path_buf());
-    if path.to_string_lossy() == "-" {
+    if path == PathBuf::from("-") {
         run_on_stdin(query)
     } else {
         run_on_directory(path, settings, query)

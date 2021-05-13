@@ -35,7 +35,7 @@ pub fn replace<'a>(input: &'a str, query: &Query) -> Option<Replacement<'a>> {
 }
 
 #[derive(Debug)]
-/// A replacement contains the of fragments, the input string and the output string
+/// A replacement contains of fragments, the input string and the output string
 pub struct Replacement<'a> {
     fragments: Fragments,
     input: &'a str,
@@ -66,28 +66,32 @@ impl<'a> Replacement<'a> {
     /// ```
     pub fn print_self(&self, prefix: &str) {
         let red_underline = { |x: &str| x.red().underline() };
-        let input_fragments: Vec<_> = self.fragments.into_iter().map(|x| &x.0).collect();
+        let input_fragments = self.fragments.into_iter().map(|x| &x.0);
         let red_prefix = format!("{}{}", prefix, "- ".red());
-        Self::print_fragments(&red_prefix, red_underline, self.input, &input_fragments);
+        Self::print_fragments(&red_prefix, red_underline, self.input, input_fragments);
 
         let green_underline = { |x: &str| x.green().underline() };
         let green_prefix = format!("{}{}", prefix, "+ ".green());
-        let output_fragments: Vec<_> = self.fragments.into_iter().map(|x| &x.1).collect();
+        let output_fragments = self.fragments.into_iter().map(|x| &x.1);
         Self::print_fragments(
             &green_prefix,
             green_underline,
             &self.output,
-            &output_fragments,
+            output_fragments,
         );
     }
 
-    fn print_fragments<C>(prefix: &str, color: C, line: &str, fragments: &[&Fragment])
-    where
+    fn print_fragments<'f, C>(
+        prefix: &str,
+        color: C,
+        line: &str,
+        fragments: impl Iterator<Item = &'f Fragment>,
+    ) where
         C: Fn(&str) -> ColoredString,
     {
         print!("{}", prefix);
         let mut current_index = 0;
-        for (i, fragment) in fragments.iter().enumerate() {
+        for (i, fragment) in fragments.enumerate() {
             let Fragment { index, text } = fragment;
             // Whitespace between prefix and the first fragment does not matter
             if i == 0 {
@@ -102,8 +106,8 @@ impl<'a> Replacement<'a> {
     }
 }
 
+// A list of input_fragment, output_fmragent
 #[derive(Debug)]
-// A list of input_fragment, output_fragent
 struct Fragments(Vec<(Fragment, Fragment)>);
 
 impl Fragments {
@@ -115,16 +119,21 @@ impl Fragments {
         self.0.is_empty()
     }
 
-    fn add(&mut self, input: (usize, &str), output: (usize, &str)) {
-        let input_fragment = Fragment {
-            index: input.0,
-            text: input.1.to_string(),
-        };
-        let output_fragent = Fragment {
-            index: output.0,
-            text: output.1.to_string(),
-        };
-        self.0.push((input_fragment, output_fragent));
+    fn add(
+        &mut self,
+        (input_index, input_text): (usize, &str),
+        (output_index, output_text): (usize, &str),
+    ) {
+        self.0.push((
+            Fragment {
+                index: input_index,
+                text: input_text.to_string(),
+            },
+            Fragment {
+                index: output_index,
+                text: output_text.to_string(),
+            },
+        ));
     }
 }
 
@@ -189,14 +198,13 @@ impl<'a> Replacer for SubvertReplacer<'a> {
         let mut best_pos = buff.len();
         let mut best_index = None;
         for (i, (pattern, _)) in self.items.iter().enumerate() {
-            let pos = buff.find(pattern);
-            match pos {
-                Some(p) if p < best_pos => {
-                    best_pos = p;
-                    best_index = Some(i)
+            if let Some(pos) = buff.find(pattern) {
+                // We found a match, but is it the best ?
+                if pos < best_pos {
+                    // Ok, record the best match so far:
+                    best_pos = pos;
+                    best_index = Some(i);
                 }
-                // Not found, or in a later position than the best, ignore
-                _ => {}
             }
         }
 
@@ -263,14 +271,11 @@ fn get_fragments_with_finder(input: &str, finder: impl Replacer) -> Fragments {
     let mut fragments = Fragments::new();
     let mut input_index = 0;
     let mut output_index = 0;
-    let mut buff = input;
-    while let Some(res) = finder.replace(buff) {
+    while let Some(res) = finder.replace(&input[input_index..]) {
         let (pos, input_text, output_text) = res;
         input_index += pos;
         output_index += pos;
         fragments.add((input_index, &input_text), (output_index, &output_text));
-        let new_start = input_index + input_text.len();
-        buff = &input[new_start..];
         input_index += input_text.len();
         output_index += output_text.len();
     }

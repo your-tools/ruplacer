@@ -2,11 +2,11 @@
 
 ## Bug fixes
 
-* Fix panic when using incorrect globs f6or file and type selections.
+* Fix panic when using incorrect globs for file and type selections.
 
 ## New feautures
 
-* Also replace `Train-Case` (alo known as `Http-Case`) variants when using `--subvert`
+* Also replace `Ada_Case` (also known as `Mixed_Case`) variants when using `--subvert`
 
 * The core functionnality has been re-written
 
@@ -22,8 +22,8 @@ Patching foo/bar.js
 
 ```
 # Using version >= 0.6
-foo/bar.js 3: old is old
-foo/bar.js 3: new is new
+foo/bar.js:3 - old is old
+foo/bar.js:3 + new is new
 ```
 
 and the patches that are printed are more precise. See #15 for details.
