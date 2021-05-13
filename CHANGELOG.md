@@ -1,6 +1,33 @@
 # 0.6.0
 
+## Bug fixes
+
 * Fix panic when using incorrect globs f6or file and type selections.
+
+## New feautures
+
+* Also replace `Train-Case` (alo known as `Http-Case`) variants when using `--subvert`
+
+* The core functionnality has been re-written
+
+The output changes lightly:
+
+```
+# Using version < 0.6
+Patching foo/bar.js
+--- old is old
++++ new is new
+```
+
+
+```
+# Using version >= 0.6
+foo/bar.js 3: old is old
+foo/bar.js 3: new is new
+```
+
+and the patches that are printed are more precise. See #15 for details.
+
 
 # 0.5.0
 
