@@ -31,19 +31,19 @@ impl Query {
 
     /// Constructor for the Subvert variant
     pub fn subvert(pattern: &str, replacement: &str) -> Self {
-        fn to_ugly_case(input: &str) -> String {
+        fn to_ada_case(input: &str) -> String {
             to_train_case(input).replace("-", "_")
         }
 
         let mut items = vec![];
         for func in &[
+            to_ada_case,
             to_camel_case,
             to_kebab_case,
             to_pascal_case,
             to_screaming_snake_case,
             to_snake_case,
             to_train_case,
-            to_ugly_case,
         ] {
             items.push((func(pattern), func(replacement)));
         }

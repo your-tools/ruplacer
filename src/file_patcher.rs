@@ -23,7 +23,7 @@ impl FilePatcher {
         // when writing the file later on
         for (num, chunk) in reader.split(b'\n').enumerate() {
             let chunk = chunk.with_context(|| format!("Error while reading {}", path.display()))?;
-            let line = String::from_utf8(chunk);
+            let line = std::str::from_utf8(&chunk);
             if line.is_err() {
                 return Ok(None);
             }
@@ -34,7 +34,7 @@ impl FilePatcher {
                 Some(replacement) => {
                     num_replacements += 1;
                     let lineno = num + 1;
-                    let prefix = format!("{}:{} ", path.to_string_lossy(), lineno);
+                    let prefix = format!("{}:{} ", path.display(), lineno);
                     let new_line = replacement.output();
                     replacement.print_self(&prefix);
                     new_contents.push_str(&new_line);
