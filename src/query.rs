@@ -1,17 +1,15 @@
+use inflector::cases::camelcase::*;
+use inflector::cases::kebabcase::*;
+use inflector::cases::pascalcase::*;
+use inflector::cases::screamingsnakecase::*;
+use inflector::cases::snakecase::*;
+use inflector::cases::traincase::*;
+
 pub enum Query {
     Substring(String, String),
     Regex(regex::Regex, String),
-    Subvert(String, String),
-}
-
-impl Query {
-    pub(crate) fn description(&self) -> (&str, &str) {
-        match self {
-            Query::Substring(old, new) => (old, new),
-            Query::Regex(re, replacement) => (re.as_str(), replacement),
-            Query::Subvert(old, new) => (old, new),
-        }
-    }
+    // A list like [(foo_bar, spam_eggs), (FooBar, SpamEggs) ...)]
+    Subvert(Vec<(String, String)>),
 }
 
 pub fn substring(old: &str, new: &str) -> Query {
@@ -23,5 +21,21 @@ pub fn from_regex(re: regex::Regex, replacement: &str) -> Query {
 }
 
 pub fn subvert(pattern: &str, replacement: &str) -> Query {
-    Query::Subvert(pattern.to_string(), replacement.to_string())
+    fn to_ugly_case(input: &str) -> String {
+        to_train_case(input).replace("-", "_")
+    }
+
+    let mut items = vec![];
+    for func in &[
+        to_camel_case,
+        to_kebab_case,
+        to_pascal_case,
+        to_screaming_snake_case,
+        to_snake_case,
+        to_train_case,
+        to_ugly_case,
+    ] {
+        items.push((func(pattern), func(replacement)));
+    }
+    Query::Subvert(items)
 }
