@@ -1,15 +1,26 @@
 use inflector::string::pluralize::to_plural;
 
 #[derive(Default, Debug)]
+/// Statistics about a run of DirectoryPatcher
 pub struct Stats {
-    pub matching_files: usize,
-    pub num_replacements: usize,
+    matching_files: usize,
+    num_replacements: usize,
 }
 
 impl Stats {
-    pub fn update(&mut self, num_replacements: usize) {
+    pub(crate) fn update(&mut self, num_replacements: usize) {
         self.matching_files += 1;
         self.num_replacements += num_replacements;
+    }
+
+    /// Number of matching files
+    pub fn matching_files(&self) -> usize {
+        self.matching_files
+    }
+
+    /// Total number of lines that were replaced
+    pub fn num_replacements(&self) -> usize {
+        self.num_replacements
     }
 }
 

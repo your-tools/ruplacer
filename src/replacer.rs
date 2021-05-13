@@ -2,8 +2,20 @@ use crate::query::Query;
 use colored::*;
 use regex::Regex;
 
-/// Main entry point: execute query on a line of input.
-/// If there was a match, return a Replacement struct
+/// Execute a query on a line of input.
+/// If there was a match, return a Replacement
+///
+/// Example
+///
+/// ```
+/// use ruplacer::{Query, replace};
+///
+/// let input = "this is some old text";
+/// let query = Query::substring("old", "new");
+/// let replacement = replace(input, &query).unwrap();
+/// let output = replacement.output();
+/// assert_eq!(output, "this is some new text");
+/// ```
 pub fn replace<'a>(input: &'a str, query: &Query) -> Option<Replacement<'a>> {
     // This occurs in two steps:
     // 1/ Compute the input and ouptut fragments - this depends
@@ -22,8 +34,8 @@ pub fn replace<'a>(input: &'a str, query: &Query) -> Option<Replacement<'a>> {
     })
 }
 
-/// A replacement contains the of fragments, the input string and the output string
 #[derive(Debug)]
+/// A replacement contains the of fragments, the input string and the output string
 pub struct Replacement<'a> {
     fragments: Fragments,
     input: &'a str,
@@ -31,11 +43,27 @@ pub struct Replacement<'a> {
 }
 
 impl<'a> Replacement<'a> {
+    /// Return the output string
     pub fn output(&self) -> &str {
         &self.output
     }
 
+    /// Return the input string
+    pub fn input(&self) -> &str {
+        &self.output
+    }
+
     /// Print the replacement as two lines (red then green)
+    /// ```
+    /// use ruplacer::{Query, replace};
+    /// let input = "let foo_bar = FooBar::new();";
+    /// let query = Query::subvert("foo_bar", "spam_eggs");
+    /// let replacement = replace(input, &query).unwrap();
+    /// replacement.print_self("foo.rs:3");
+    /// // outputs:
+    /// // foo.rs:3 let foo_bar = FooBar::new()
+    /// // foo.rs3 let spam_eggs = SpamEggs::new()
+    /// ```
     pub fn print_self(&self, prefix: &str) {
         let red_underline = { |x: &str| x.red().underline() };
         let input_fragments: Vec<_> = self.fragments.into_iter().map(|x| &x.0).collect();
@@ -268,7 +296,6 @@ fn get_output(input: &str, fragments: &Fragments) -> String {
 mod tests {
 
     use super::*;
-    use crate::query;
     use regex::Regex;
 
     #[test]
@@ -276,7 +303,7 @@ mod tests {
         let input = "Mon thé c'est le meilleur des thés !";
         let pattern = "thé";
         let replacement = "café";
-        let query = query::substring(pattern, replacement);
+        let query = Query::substring(pattern, replacement);
         let replacement = replace(input, &query).unwrap();
         assert_eq!(
             replacement.output(),
@@ -289,7 +316,7 @@ mod tests {
         let input = "old old old";
         let pattern = "old";
         let replacement = "new";
-        let query = query::substring(pattern, replacement);
+        let query = Query::substring(pattern, replacement);
         let replacement = replace(input, &query).unwrap();
         assert_eq!(replacement.output(), "new new new");
     }
@@ -299,7 +326,7 @@ mod tests {
         let input = "Top: old is nice";
         let pattern = "old";
         let replacement = "new";
-        let query = query::substring(pattern, replacement);
+        let query = Query::substring(pattern, replacement);
         let replacement = replace(input, &query).unwrap();
         replacement.print_self("foo.txt:3 ");
     }
@@ -309,7 +336,7 @@ mod tests {
         let input = "let foo_bar = FooBar::new();";
         let pattern = "foo_bar";
         let replacement = "spam_eggs";
-        let query = query::subvert(pattern, replacement);
+        let query = Query::subvert(pattern, replacement);
         let replacement = replace(input, &query).unwrap();
         assert_eq!(replacement.output(), "let spam_eggs = SpamEggs::new();");
     }
@@ -318,7 +345,7 @@ mod tests {
     fn test_regex_with_substitutions() {
         let input = "first, second";
         let regex = Regex::new(r"(\w+), (\w+)").unwrap();
-        let query = query::from_regex(regex, r"$2 $1");
+        let query = Query::regex(regex, r"$2 $1");
         let replacement = replace(input, &query).unwrap();
         assert_eq!(replacement.output(), "second first");
     }
@@ -327,7 +354,7 @@ mod tests {
     fn test_simple_regex() {
         let input = "old is old";
         let regex = Regex::new("old").unwrap();
-        let query = query::from_regex(regex, "new");
+        let query = Query::regex(regex, "new");
         let replacement = replace(input, &query).unwrap();
         assert_eq!(replacement.output(), "new is new");
     }
