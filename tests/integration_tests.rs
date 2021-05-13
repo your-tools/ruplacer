@@ -5,8 +5,8 @@ use std::process::Command;
 use anyhow::Result;
 use tempdir::TempDir;
 
-use ruplacer::query;
 use ruplacer::DirectoryPatcher;
+use ruplacer::Query;
 use ruplacer::Settings;
 
 fn setup_test(tmp_dir: &TempDir) -> PathBuf {
@@ -46,7 +46,7 @@ fn assert_not_replaced(path: &Path) {
 
 fn run_ruplacer(data_path: &Path, settings: Settings) -> Result<DirectoryPatcher> {
     let mut directory_patcher = DirectoryPatcher::new(data_path.to_path_buf(), settings);
-    directory_patcher.run(&query::substring("old", "new"))?;
+    directory_patcher.run(&Query::substring("old", "new"))?;
     Ok(directory_patcher)
 }
 
@@ -73,8 +73,8 @@ fn test_stats() {
     let settings = Settings::default();
     let patcher = run_ruplacer(&data_path, settings).unwrap();
     let stats = patcher.stats();
-    assert!(stats.matching_files > 1);
-    assert!(stats.num_replacements > 1);
+    assert!(stats.matching_files() > 1);
+    assert!(stats.num_replacements() > 1);
 }
 
 #[test]
@@ -167,7 +167,7 @@ fn test_select_file_types() {
     let patcher = run_ruplacer(&data_path, settings).unwrap();
 
     let stats = patcher.stats();
-    assert_eq!(stats.matching_files, 1);
+    assert_eq!(stats.matching_files(), 1);
 }
 
 #[test]
@@ -183,7 +183,7 @@ fn test_select_file_types_by_glob_pattern_1() {
     let patcher = run_ruplacer(&data_path, settings).unwrap();
 
     let stats = patcher.stats();
-    assert_eq!(stats.matching_files, 1);
+    assert_eq!(stats.matching_files(), 1);
 }
 
 #[test]
@@ -199,7 +199,7 @@ fn test_select_file_types_by_glob_pattern_2() {
     let patcher = run_ruplacer(&data_path, settings).unwrap();
 
     let stats = patcher.stats();
-    assert_eq!(stats.matching_files, 1);
+    assert_eq!(stats.matching_files(), 1);
 }
 
 #[test]
