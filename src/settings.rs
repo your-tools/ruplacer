@@ -9,7 +9,7 @@ pub struct Settings {
     pub ignored: bool,
     /// List of file types to select (default: empty)
     pub selected_file_types: Vec<String>,
-    /// List of file types to ignnore (default: empty)
+    /// List of file types to ignore (default: empty)
     pub ignored_file_types: Vec<String>,
 }
 
