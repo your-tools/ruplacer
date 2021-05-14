@@ -201,8 +201,22 @@ impl<'a> SubvertReplacer<'a> {
 
 impl<'a> Replacer for SubvertReplacer<'a> {
     fn replace(&self, buff: &str) -> Option<(usize, String, String)> {
-        // We need to return the best possible match, otherwise we may
-        // replace FooBar with SpamEggs *before* replacing foo-bar with spam-eggs
+        // Note: replacing using subvert can get tricky
+        //
+        // Let's say self.items contains
+        //  [("old", "new"), ("Old", "New")]
+        // and that input is "
+        //   "Old old = new Old();"
+        //
+        // Due to the algorithm used in get_output(), the fragments
+        // must be in the correct order - which means we must return
+        // (0, "Old", "New"), the match corresponding to the *second
+        // item*), and not (4, "old","new"), the match corresponding
+        // to the first item.
+        //
+        // Otherwise, the output would end up like this:
+        //     "Old new = new New();";
+        // which is not what we want!
         let mut best_pos = buff.len();
         let mut best_index = None;
         for (i, (pattern, _)) in self.items.iter().enumerate() {
@@ -216,8 +230,7 @@ impl<'a> Replacer for SubvertReplacer<'a> {
             }
         }
 
-        let best_index = best_index?;
-        let best_item = &self.items[best_index];
+        let best_item = &self.items[best_index?];
         let (pattern, replacement) = best_item;
         Some((best_pos, pattern.to_string(), replacement.to_string()))
     }
@@ -270,7 +283,7 @@ fn get_fragments_with_finder(input: &str, finder: impl Replacer) -> Fragments {
     // using the length of the input text and the length of the output text respectively
     // Truncate the input string at each step to keep finding successive matches:
     //
-    // step | buf                      | input_fragment | output_fragent
+    // step | buf                      | input_fragment | output_fragment
     // -----|--------------------------|----------------|----------
     //    0 | "my tea is the best tea" |     (3, "tea") | (3, "coffe")
     //    1 | "  is the best tea"      |    (19, "tea") | (20, "coffe")
@@ -343,6 +356,8 @@ mod tests {
 
     #[test]
     fn test_display_patch() {
+        // Note: no assertion there. The test is here so it's easy
+        // to tweak ruplacer's output running `cargo test -- --nocapture`
         let input = "Top: old is nice";
         let pattern = "old";
         let replacement = "new";
