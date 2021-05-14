@@ -4,14 +4,13 @@
 
 * Fix panic when using incorrect globs for file and type selections.
 
-## New feautures
+## New features
 
 * Also replace `Ada_Case` (also known as `Mixed_Case`) variants when using `--subvert`
 
-* The core functionnality has been re-written
+## New output
 
-The output changes lightly:
-
+The output has changed, going from:
 ```
 # Using version < 0.6
 Patching foo/bar.js
@@ -19,15 +18,22 @@ Patching foo/bar.js
 +++ new is new
 ```
 
+to:
 
 ```
 # Using version >= 0.6
 foo/bar.js:3 - old is old
 foo/bar.js:3 + new is new
 ```
+* ruplacer now displays the path and line number of each line that changed
+* the coloring of patches is more precise. See #15 for details.
+* ruplacer reports the total number of replacements, rather than the
+  number of lines that changed
 
-and the patches that are printed are more precise. See #15 for details.
+## Internal changes
 
+* Drop dependency on the `difference` crate
+* Improve public API
 
 # 0.5.0
 
