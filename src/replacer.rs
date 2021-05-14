@@ -18,7 +18,7 @@ use regex::Regex;
 /// ```
 pub fn replace<'a>(input: &'a str, query: &Query) -> Option<Replacement<'a>> {
     // This occurs in two steps:
-    // 1/ Compute the input and ouptut fragments - this depends
+    // 1/ Compute the input and output fragments - this depends
     //    on the query enum variant
     // 2/ Use the list of fragments to build the output string
     //   (this uses the same code for every query enum variant)
@@ -110,7 +110,7 @@ impl<'a> Replacement<'a> {
     }
 }
 
-// A list of input_fragment, output_fmragent
+// A list of input_fragment, output_fragment
 #[derive(Debug)]
 struct Fragments(Vec<(Fragment, Fragment)>);
 
@@ -257,7 +257,7 @@ impl<'a> Replacer for RegexReplacer<'a> {
     }
 }
 
-/// Return a list of fragments for input string and ouptut string
+/// Return a list of fragments for input string and output string
 /// Both lists of fragments will be used for:
 ///    - computing the output string
 ///    - printing the patch
