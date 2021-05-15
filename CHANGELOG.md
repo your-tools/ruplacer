@@ -34,6 +34,7 @@ foo/bar.js:3 + new is new
 
 * Drop dependency on the `difference` crate
 * Improve public API
+* Default branch is now called `main`
 
 # 0.5.0
 
