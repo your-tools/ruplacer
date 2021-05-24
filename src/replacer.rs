@@ -164,7 +164,7 @@ struct Fragment {
 }
 
 trait Replacer {
-    // return position of the match, input_text, output_text, or None
+    // return index of the match, input_text, output_text, or None
     fn replace(&self, buff: &str) -> Option<(usize, String, String)>;
 }
 
@@ -184,8 +184,12 @@ impl<'a> SubstringReplacer<'a> {
 
 impl<'a> Replacer for SubstringReplacer<'a> {
     fn replace(&self, buff: &str) -> Option<(usize, String, String)> {
-        let pos = buff.find(&self.pattern)?;
-        Some((pos, self.pattern.to_string(), self.replacement.to_string()))
+        let index = buff.find(&self.pattern)?;
+        Some((
+            index,
+            self.pattern.to_string(),
+            self.replacement.to_string(),
+        ))
     }
 }
 
@@ -217,22 +221,22 @@ impl<'a> Replacer for SubvertReplacer<'a> {
         // Otherwise, the output would end up like this:
         //     "Old new = new New();";
         // which is not what we want!
-        let mut best_pos = buff.len();
-        let mut best_index = None;
+        let mut best_index = buff.len();
+        let mut best_pattern = None;
         for (i, (pattern, _)) in self.items.iter().enumerate() {
-            if let Some(pos) = buff.find(pattern) {
+            if let Some(index) = buff.find(pattern) {
                 // We found a match, but is it the best ?
-                if pos < best_pos {
-                    // Ok, record the best match so far:
-                    best_pos = pos;
-                    best_index = Some(i);
+                if index < best_index {
+                    // Ok, record the best pattern so far:
+                    best_index = index;
+                    best_pattern = Some(i);
                 }
             }
         }
 
-        let best_item = &self.items[best_index?];
+        let best_item = &self.items[best_pattern?];
         let (pattern, replacement) = best_item;
-        Some((best_pos, pattern.to_string(), replacement.to_string()))
+        Some((best_index, pattern.to_string(), replacement.to_string()))
     }
 }
 
@@ -250,10 +254,10 @@ impl<'a> RegexReplacer<'a> {
 impl<'a> Replacer for RegexReplacer<'a> {
     fn replace(&self, buff: &str) -> Option<(usize, String, String)> {
         let regex_match = self.regex.find(buff)?;
-        let pos = regex_match.start();
+        let index = regex_match.start();
         let input_text = regex_match.as_str();
         let output_text = self.regex.replacen(input_text, 1, self.replacement);
-        Some((pos, input_text.to_string(), output_text.to_string()))
+        Some((index, input_text.to_string(), output_text.to_string()))
     }
 }
 
@@ -293,9 +297,9 @@ fn get_fragments_with_finder(input: &str, finder: impl Replacer) -> Fragments {
     let mut input_index = 0;
     let mut output_index = 0;
     while let Some(res) = finder.replace(&input[input_index..]) {
-        let (pos, input_text, output_text) = res;
-        input_index += pos;
-        output_index += pos;
+        let (index, input_text, output_text) = res;
+        input_index += index;
+        output_index += index;
         fragments.add((input_index, &input_text), (output_index, &output_text));
         input_index += input_text.len();
         output_index += output_text.len();
