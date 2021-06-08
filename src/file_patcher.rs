@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::{self, BufRead, BufReader};
 use std::path::{Path, PathBuf};
 
 use crate::query::Query;
@@ -23,7 +23,7 @@ impl FilePatcher {
         let mut new_contents = String::new();
         // Note: not using lines() because we need to preserve the line endings
         // when writing the file later on
-        for (num, chunk) in reader.split(b'\n').enumerate() {
+        for (num, chunk) in LineIterator::new(b'\n', reader).enumerate() {
             let chunk = chunk.with_context(|| format!("Error while reading {}", path.display()))?;
             let line = std::str::from_utf8(&chunk);
             if line.is_err() {
@@ -43,7 +43,6 @@ impl FilePatcher {
                     new_contents.push_str(&new_line);
                 }
             }
-            new_contents.push('\n');
         }
         Ok(Some(FilePatcher {
             path: path.to_path_buf(),
@@ -68,6 +67,32 @@ impl FilePatcher {
     }
 }
 
+/// `LineIterator` wraps `BufRead`'s `read_until` method in an iterator, thereby
+/// preserving the delimiter in the yielded values.
+struct LineIterator<T: BufRead> {
+    delimiter: u8,
+    reader: T,
+}
+
+impl<T: BufRead> LineIterator<T> {
+    fn new(delimiter: u8, reader: T) -> Self {
+        Self { delimiter, reader }
+    }
+}
+
+impl<T: BufRead> Iterator for LineIterator<T> {
+    type Item = io::Result<Vec<u8>>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut buf = Vec::new();
+        match self.reader.read_until(self.delimiter, &mut buf) {
+            Ok(0) => None,
+            Ok(_) => Some(Ok(buf)),
+            Err(e) => Some(Err(e)),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -77,7 +102,17 @@ mod tests {
     #[test]
     fn test_patch_file() {
         let temp_dir = tempdir::TempDir::new("test-ruplacer").unwrap();
-        let file_path = temp_dir.path().join("foo.txt");
+
+        let file_path = temp_dir.path().join("without-trailing-newline.txt");
+        fs::write(&file_path, "first line\nI say: old is nice\nlast line").unwrap();
+        let query = Query::substring("old", "new");
+        let file_patcher = FilePatcher::new(&file_path, &query).unwrap();
+        file_patcher.unwrap().run().unwrap();
+        let actual = fs::read_to_string(&file_path).unwrap();
+        let expected = "first line\nI say: new is nice\nlast line";
+        assert_eq!(actual, expected);
+
+        let file_path = temp_dir.path().join("with-trailing-newline.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line\n").unwrap();
         let query = Query::substring("old", "new");
         let file_patcher = FilePatcher::new(&file_path, &query).unwrap();
