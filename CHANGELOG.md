@@ -1,7 +1,7 @@
 # 0.6.1
 
 * Handle trailing newlines consistently. Previously, `ruplacer` would
-  always write file with a trailing new lines. Patch by @LawnGnome.
+  always write file with a trailing new line. Patch by @LawnGnome.
 
 # 0.6.0
 

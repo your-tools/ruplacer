@@ -66,7 +66,7 @@ impl<'a> Replacement<'a> {
     /// replacement.print_self("foo.rs:3");
     /// // outputs:
     /// // foo.rs:3 let foo_bar = FooBar::new()
-    /// // foo.rs3 let spam_eggs = SpamEggs::new()
+    /// // foo.rs:3 let spam_eggs = SpamEggs::new()
     /// ```
     pub fn print_self(&self, prefix: &str) {
         let red_underline = { |x: &str| x.red().underline() };
