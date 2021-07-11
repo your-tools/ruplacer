@@ -1,3 +1,7 @@
+# 0.6.2
+
+* Fix regression in ruplacer diff output introduced in 0.6.1.
+
 # 0.6.1
 
 * Handle trailing newlines consistently. Previously, `ruplacer` would
