@@ -106,7 +106,10 @@ impl<'a> Replacement<'a> {
             print!("{}", color(text));
             current_index = index + text.len();
         }
-        println!("{}", &line[current_index..]);
+        print!("{}", &line[current_index..]);
+        if !line.ends_with('\n') {
+            println!()
+        }
     }
 }
 
