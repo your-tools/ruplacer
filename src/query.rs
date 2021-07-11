@@ -36,7 +36,7 @@ impl Query {
         }
 
         let mut items = vec![];
-        for func in &[
+        for function in &[
             to_ada_case,
             to_camel_case,
             to_kebab_case,
@@ -45,7 +45,7 @@ impl Query {
             to_snake_case,
             to_train_case,
         ] {
-            items.push((func(pattern), func(replacement)));
+            items.push((function(pattern), function(replacement)));
         }
         Self::Subvert(items)
     }

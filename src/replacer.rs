@@ -289,8 +289,8 @@ fn get_fragments_with_finder(input: &str, finder: impl Replacer) -> Fragments {
     //
     // step | buf                      | input_fragment | output_fragment
     // -----|--------------------------|----------------|----------
-    //    0 | "my tea is the best tea" |     (3, "tea") | (3, "coffe")
-    //    1 | "  is the best tea"      |    (19, "tea") | (20, "coffe")
+    //    0 | "my tea is the best tea" |     (3, "tea") |  (3, "coffee")
+    //    1 | "  is the best tea"      |    (19, "tea") | (22, "coffee")
     //    2 | " !"                     |      n/a       | n/a
     //
     let mut fragments = Fragments::new();
