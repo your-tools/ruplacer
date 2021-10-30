@@ -271,15 +271,15 @@ impl<'a> Replacer for RegexReplacer<'a> {
 fn get_fragments(input: &str, query: &Query) -> Fragments {
     match query {
         Query::Substring(pattern, replacement) => {
-            let finder = SubstringReplacer::new(&pattern, &replacement);
+            let finder = SubstringReplacer::new(pattern, replacement);
             get_fragments_with_finder(input, finder)
         }
         Query::Regex(regex, replacement) => {
-            let finder = RegexReplacer::new(&regex, &replacement);
+            let finder = RegexReplacer::new(regex, replacement);
             get_fragments_with_finder(input, finder)
         }
         Query::Subvert(items) => {
-            let finder = SubvertReplacer::new(&items);
+            let finder = SubvertReplacer::new(items);
             get_fragments_with_finder(input, finder)
         }
     }
@@ -325,7 +325,7 @@ fn get_output(input: &str, fragments: &Fragments) -> String {
         } = output_fragment;
 
         output.push_str(&input[current_index..*input_index]);
-        output.push_str(&output_text);
+        output.push_str(output_text);
         current_index = input_index + input_text.len();
     }
     output.push_str(&input[current_index..]);

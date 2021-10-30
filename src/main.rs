@@ -192,7 +192,7 @@ fn main() -> Result<()> {
     let dry_run = !go;
 
     let color_when = &color_when.unwrap_or(ColorWhen::Auto);
-    configure_color(&color_when);
+    configure_color(color_when);
 
     let query = if no_regex {
         ruplacer::Query::substring(&pattern, &replacement)
