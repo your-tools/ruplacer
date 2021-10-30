@@ -30,9 +30,9 @@ impl FilePatcher {
                 return Ok(None);
             }
             let line = line.unwrap();
-            let replacement = replace(&line, &query);
+            let replacement = replace(line, query);
             match replacement {
-                None => new_contents.push_str(&line),
+                None => new_contents.push_str(line),
                 Some(replacement) => {
                     num_lines += 1;
                     num_replacements += replacement.num_fragments();
@@ -40,7 +40,7 @@ impl FilePatcher {
                     let prefix = format!("{}:{} ", path.display(), lineno);
                     let new_line = replacement.output();
                     replacement.print_self(&prefix);
-                    new_contents.push_str(&new_line);
+                    new_contents.push_str(new_line);
                 }
             }
         }

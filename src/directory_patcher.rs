@@ -49,7 +49,7 @@ impl<'a> DirectoryPatcher<'a> {
             let entry = entry.with_context(|| "Could not read directory entry")?;
             if let Some(file_type) = entry.file_type() {
                 if file_type.is_file() {
-                    self.patch_file(&entry.path(), &query)?;
+                    self.patch_file(entry.path(), query)?;
                 }
             }
         }
@@ -61,7 +61,7 @@ impl<'a> DirectoryPatcher<'a> {
     }
 
     pub(crate) fn patch_file(&mut self, entry: &Path, query: &Query) -> Result<()> {
-        let file_patcher = FilePatcher::new(entry, &query)?;
+        let file_patcher = FilePatcher::new(entry, query)?;
         let file_patcher = match file_patcher {
             None => return Ok(()),
             Some(f) => f,
