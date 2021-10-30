@@ -24,4 +24,4 @@ anyhow = "1.0.32"
 
 
 [dev-dependencies]
-tempdir = "0.3"
+tempfile = "3.2"

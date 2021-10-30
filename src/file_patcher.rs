@@ -98,10 +98,18 @@ mod tests {
     use super::*;
     use crate::Query;
     use std::fs;
+    use tempfile::TempDir;
+
+    fn temp_dir() -> TempDir {
+        tempfile::Builder::new()
+            .prefix("test-ruplacer")
+            .tempdir()
+            .unwrap()
+    }
 
     #[test]
     fn test_patch_file() {
-        let temp_dir = tempdir::TempDir::new("test-ruplacer").unwrap();
+        let temp_dir = temp_dir();
 
         let file_path = temp_dir.path().join("without-trailing-newline.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line").unwrap();
