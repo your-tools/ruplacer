@@ -1,9 +1,8 @@
 name: Audit dependencies
 on:
-  push:
-    paths:
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
+  schedule:
+    - cron:  '0 1 * * *'
+
 jobs:
   security_audit:
     runs-on: ubuntu-latest
