@@ -1,10 +1,10 @@
 use anyhow::{anyhow, Error, Result};
+use clap::Parser;
 use colored::*;
 use isatty::stdout_isatty;
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::process;
-use structopt::StructOpt;
 
 #[derive(Debug)]
 enum ColorWhen {
@@ -26,8 +26,8 @@ impl std::str::FromStr for ColorWhen {
     }
 }
 
-#[derive(Debug, StructOpt)]
-#[structopt(
+#[derive(Debug, Parser)]
+#[clap(
     name = "ruplacer",
     after_help = "
 EXAMPLES:
@@ -47,68 +47,68 @@ EXAMPLES:
 "
 )]
 struct Options {
-    #[structopt(long = "go", help = "Write the changes to the filesystem")]
+    #[clap(long = "go", help = "Write the changes to the filesystem")]
     go: bool,
 
-    #[structopt(help = "The pattern to search for")]
+    #[clap(help = "The pattern to search for")]
     pattern: String,
 
-    #[structopt(help = "The replacement")]
+    #[clap(help = "The replacement")]
     replacement: String,
 
-    #[structopt(
+    #[clap(
         parse(from_os_str),
         help = "The source path. Defaults to the working directory"
     )]
     path: Option<PathBuf>,
 
-    #[structopt(
+    #[clap(
         long = "--no-regex",
         help = "Interpret pattern as a raw string. Default is: regex"
     )]
     no_regex: bool,
 
-    #[structopt(long = "--hidden", help = "Also patch hidden files")]
+    #[clap(long = "--hidden", help = "Also patch hidden files")]
     hidden: bool,
 
-    #[structopt(long = "--ignored", help = "Also patch ignored files")]
+    #[clap(long = "--ignored", help = "Also patch ignored files")]
     ignored: bool,
 
-    #[structopt(
+    #[clap(
         long = "--word-regex",
-        short = "-w",
+        short = 'w',
         help = "Interpret pattern as a 'word' regex"
     )]
     word_regex: bool,
 
-    #[structopt(
+    #[clap(
         long = "--subvert",
         help = "Replace all variants of the pattern (snake_case, CamelCase and so on)"
     )]
     subvert: bool,
 
-    #[structopt(
-        short = "t",
+    #[clap(
+        short = 't',
         long = "type",
         help = "Only search files matching <file_type> or glob pattern.",
-        multiple = true,
+        multiple_occurrences = true,
         number_of_values = 1
     )]
     selected_file_types: Vec<String>,
 
-    #[structopt(
-        short = "T",
+    #[clap(
+        short = 'T',
         long = "type-not",
         help = "Ignore files matching <file_type> or glob pattern.",
-        multiple = true,
+        multiple_occurrences = true,
         number_of_values = 1
     )]
     ignored_file_types: Vec<String>,
 
-    #[structopt(long = "type-list", help = "List the known file types")]
+    #[clap(long = "type-list", help = "List the known file types")]
     file_type_list: bool,
 
-    #[structopt(
+    #[clap(
         long = "--color",
         help = "Whether to enable colorful output. Choose between 'always', 'auto', or 'never'. Default is 'auto'"
     )]
@@ -167,7 +167,7 @@ fn on_type_list() {
 }
 
 fn main() -> Result<()> {
-    let opt = Options::from_args();
+    let opt = Options::parse();
     let Options {
         color_when,
         file_type_list,
