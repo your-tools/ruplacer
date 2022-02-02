@@ -1,3 +1,8 @@
+# 0.6.3
+
+* Update dependencies
+* Bump to Rust 2021 edition
+
 # 0.6.2
 
 * Fix regression in ruplacer diff output introduced in 0.6.1.
