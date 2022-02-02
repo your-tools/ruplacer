@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Error, Result};
+use atty;
 use clap::Parser;
 use colored::*;
-use isatty::stdout_isatty;
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::process;
@@ -137,7 +137,7 @@ fn configure_color(when: &ColorWhen) {
         ColorWhen::Always => std::env::set_var("CLICOLOR_FORCE", "1"),
         ColorWhen::Never => std::env::set_var("CLICOLOR", "0"),
         ColorWhen::Auto => {
-            if stdout_isatty() {
+            if atty::is(atty::Stream::Stdout) {
                 std::env::set_var("CLICOLOR", "1")
             } else {
                 std::env::set_var("CLICOLOR", "0")
