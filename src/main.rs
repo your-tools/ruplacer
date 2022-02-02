@@ -1,5 +1,4 @@
 use anyhow::{anyhow, Error, Result};
-use atty;
 use clap::Parser;
 use colored::*;
 use std::io::prelude::*;
