@@ -16,7 +16,7 @@ extended-description = "Find and replace text in source files"
 [dependencies]
 ignore = "0.4"
 colored = "2.0"
-regex = "1"
+regex = "1.5.1"
 atty = "0.2.14"
 Inflector = "0.11"
 anyhow = "1.0.32"
