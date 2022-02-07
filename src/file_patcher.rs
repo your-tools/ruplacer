@@ -6,6 +6,21 @@ use std::path::{Path, PathBuf};
 use crate::query::Query;
 use crate::replace;
 
+/// Used to run replacement query on every text file present in a given path
+/// ```rust
+/// use ruplacer::{FilePatcher, Query};
+/// use std::path::PathBuf;
+///
+/// // data.txt: "This is my old car."
+///
+/// let file = PathBuf::from("data.txt");
+/// let query = Query::substring("old", "new");
+/// let file_patcher = FilePatcher::new(&file, &query).unwrap();
+/// file_patcher.unwrap().run().unwrap();
+///
+/// // Output:
+/// // This is my new car.
+/// ```
 pub struct FilePatcher {
     path: PathBuf,
     new_contents: String,
@@ -60,6 +75,7 @@ impl FilePatcher {
         self.num_lines
     }
 
+    /// Write new contents to the file.
     pub fn run(&self) -> Result<()> {
         std::fs::write(&self.path, &self.new_contents)
             .with_context(|| format!("Could not write {}", self.path.display()))?;
