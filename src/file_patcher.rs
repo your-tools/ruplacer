@@ -6,6 +6,22 @@ use std::path::{Path, PathBuf};
 use crate::query::Query;
 use crate::replace;
 
+/// Run replacement query on a given file
+///
+/// Example, assuming the `data.txt` file contains 'This is my old car'
+/// ```rust
+/// use ruplacer::{FilePatcher, Query};
+/// use std::path::PathBuf;
+///
+/// # std::fs::write("data.txt", "This is my old car.").unwrap();
+/// let file = PathBuf::from("data.txt");
+/// let query = Query::substring("old", "new");
+/// let file_patcher = FilePatcher::new(&file, &query).unwrap();
+/// file_patcher.unwrap().run().unwrap();
+///
+/// let new_contents = std::fs::read_to_string("data.txt").unwrap();
+/// assert_eq!(new_contents, "This is my new car.");
+/// ```
 pub struct FilePatcher {
     path: PathBuf,
     new_contents: String,
@@ -60,6 +76,7 @@ impl FilePatcher {
         self.num_lines
     }
 
+    /// Write new contents to the file.
     pub fn run(&self) -> Result<()> {
         std::fs::write(&self.path, &self.new_contents)
             .with_context(|| format!("Could not write {}", self.path.display()))?;

@@ -2,3 +2,4 @@
 **/*.rs.bk
 tarpaulin-report.html
 dist/
+data.txt
