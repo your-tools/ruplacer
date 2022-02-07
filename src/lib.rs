@@ -7,5 +7,6 @@ pub use settings::Settings;
 mod stats;
 pub use crate::replacer::{replace, Replacement};
 pub use directory_patcher::DirectoryPatcher;
+pub use file_patcher::FilePatcher;
 pub use query::Query;
 pub use stats::Stats;
