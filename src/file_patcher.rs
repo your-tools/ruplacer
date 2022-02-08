@@ -11,15 +11,10 @@ use crate::replace;
 /// use ruplacer::{FilePatcher, Query};
 /// use std::path::PathBuf;
 ///
-/// // data.txt: "This is my old car."
-///
-/// let file = PathBuf::from("data.txt");
+/// let file = PathBuf::from("tests/data");
 /// let query = Query::substring("old", "new");
 /// let file_patcher = FilePatcher::new(&file, &query).unwrap();
 /// file_patcher.unwrap().run().unwrap();
-///
-/// // Output:
-/// // This is my new car.
 /// ```
 pub struct FilePatcher {
     path: PathBuf,
