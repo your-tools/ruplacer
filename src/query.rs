@@ -32,7 +32,7 @@ impl Query {
     /// Constructor for the Subvert variant
     pub fn subvert(pattern: &str, replacement: &str) -> Self {
         fn to_ada_case(input: &str) -> String {
-            to_train_case(input).replace("-", "_")
+            to_train_case(input).replace('-', "_")
         }
 
         let mut items = vec![];
