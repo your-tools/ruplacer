@@ -10,6 +10,9 @@ pub struct Stats {
 
 impl Stats {
     pub(crate) fn update(&mut self, lines: usize, replacements: usize) {
+        if replacements == 0 {
+            return;
+        }
         self.matching_files += 1;
         self.matching_lines += lines;
         self.total_replacements += replacements;
