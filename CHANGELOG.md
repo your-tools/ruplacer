@@ -1,3 +1,8 @@
+# 0.6.4
+
+* Fix bug where the printed number of matching files was generally too big.
+* Improve documentation for `FilePatcher`
+
 # 0.6.3
 
 * Update dependencies
