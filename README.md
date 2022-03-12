@@ -44,7 +44,7 @@ https://github.com/dmerejkowsky/ruplacer/releases/tag/v0.6.4).
 * `ruplacer` can also be installed from `homebrew`:
 
 ```
-$ brew install TankerHQ/homebrew-repo/ruplacer
+brew install TankerHQ/homebrew-repo/ruplacer
 ```
 
 * `ruplacer` is also on [the Arch Linux User Repository](https://aur.archlinux.org/packages/ruplacer/)
@@ -75,7 +75,7 @@ groups captured from `pattern` inside `replacement`.
 For instance, this replaces 'last, first' by 'first last':
 
 ```
-$ ruplacer '(\w+), (\w+)' '$2 $1'
+ruplacer '(\w+), (\w+)' '$2 $1'
 ```
 
 (note the use of single quotes to avoid any processing by the shell)
