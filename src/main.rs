@@ -28,6 +28,7 @@ impl std::str::FromStr for ColorWhen {
 #[derive(Debug, Parser)]
 #[clap(
     name = "ruplacer",
+    version,
     after_help = "
 EXAMPLES:
     Replace 'foo' with 'bar'
