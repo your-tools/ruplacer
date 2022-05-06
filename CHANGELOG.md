@@ -1,3 +1,7 @@
+# 0.6.5 (2022-05-06)
+
+* Add `-V, --version` option. Patch by @homeworkprod
+
 # 0.6.4 (2022-02-28)
 
 * Fix bug where the printed number of matching files was generally too big.
