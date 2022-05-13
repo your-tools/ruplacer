@@ -56,8 +56,8 @@ impl FilePatcher {
                     num_replacements += replacement.num_fragments();
                     let lineno = num + 1;
                     let prefix = format!("{}:{} ", path.display(), lineno);
+                    console.print_replacement(&prefix, &replacement);
                     let new_line = replacement.output();
-                    replacement.print_self(console, &prefix);
                     new_contents.push_str(new_line);
                 }
             }

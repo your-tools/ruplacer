@@ -1,6 +1,5 @@
 use crate::query::Query;
-use crate::Console;
-use colored::*;
+
 use regex::Regex;
 
 /// Execute a query on a line of input.
@@ -58,74 +57,14 @@ impl<'a> Replacement<'a> {
         self.fragments.len()
     }
 
-    /// Print the replacement as two lines (red then green)
-    /// ```
-    /// use ruplacer::{Console, Query, replace};
-    /// let input = "let foo_bar = FooBar::new();";
-    /// let query = Query::subvert("foo_bar", "spam_eggs");
-    /// let console = Console::new();
-    /// let replacement = replace(input, &query).unwrap();
-    /// replacement.print_self(&console, "foo.rs:3");
-    /// // outputs:
-    /// // foo.rs:3 let foo_bar = FooBar::new()
-    /// // foo.rs:3 let spam_eggs = SpamEggs::new()
-    /// ```
-    pub fn print_self(&self, console: &Console, prefix: &str) {
-        let red_underline = { |x: &str| x.red().underline() };
-        let input_fragments = self.fragments.into_iter().map(|x| &x.0);
-        let red_prefix = format!("{}{}", prefix, "- ".red());
-        Self::print_fragments(
-            console,
-            &red_prefix,
-            red_underline,
-            self.input,
-            input_fragments,
-        );
-
-        let green_underline = { |x: &str| x.green().underline() };
-        let green_prefix = format!("{}{}", prefix, "+ ".green());
-        let output_fragments = self.fragments.into_iter().map(|x| &x.1);
-        Self::print_fragments(
-            console,
-            &green_prefix,
-            green_underline,
-            &self.output,
-            output_fragments,
-        );
-    }
-
-    fn print_fragments<'f, C>(
-        console: &Console,
-        prefix: &str,
-        color: C,
-        line: &str,
-        fragments: impl Iterator<Item = &'f Fragment>,
-    ) where
-        C: Fn(&str) -> ColoredString,
-    {
-        console.print_message(prefix);
-        let mut current_index = 0;
-        for (i, fragment) in fragments.enumerate() {
-            let Fragment { index, text } = fragment;
-            // Whitespace between prefix and the first fragment does not matter
-            if i == 0 {
-                console.print_message((&line[current_index..*index].trim_start()).as_ref());
-            } else {
-                console.print_message(&line[current_index..*index]);
-            }
-            console.print_message(&format!("{}", color(text)));
-            current_index = index + text.len();
-        }
-        console.print_message(&line[current_index..]);
-        if !line.ends_with('\n') {
-            console.print_message("\n");
-        }
+    pub(crate) fn fragments(&self) -> &Fragments {
+        &self.fragments
     }
 }
 
 // A list of input_fragment, output_fragment
 #[derive(Debug)]
-struct Fragments(Vec<(Fragment, Fragment)>);
+pub(crate) struct Fragments(Vec<(Fragment, Fragment)>);
 
 impl Fragments {
     fn new() -> Self {
@@ -171,9 +110,9 @@ impl<'a> IntoIterator for &'a Fragments {
 /// Represent a fragment of text, similar to the data structure returned
 /// by String::match_indices
 #[derive(Debug)]
-struct Fragment {
-    index: usize,
-    text: String,
+pub(crate) struct Fragment {
+    pub(crate) index: usize,
+    pub(crate) text: String,
 }
 
 trait Replacer {
@@ -345,6 +284,8 @@ fn get_output(input: &str, fragments: &Fragments) -> String {
 #[cfg(test)]
 mod tests {
 
+    use crate::Console;
+
     use super::*;
     use regex::Regex;
 
@@ -381,7 +322,7 @@ mod tests {
         let query = Query::substring(pattern, replacement);
         let replacement = replace(input, &query).unwrap();
         let console = Console::new();
-        replacement.print_self(&console, "foo.txt:3 ");
+        console.print_replacement("foo.txt:3 ", &replacement);
     }
 
     #[test]
