@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use std::path::Path;
 
+use crate::console::Console;
 use crate::file_patcher::FilePatcher;
 use crate::query::Query;
 use crate::settings::Settings;
@@ -9,7 +10,7 @@ use crate::stats::Stats;
 #[derive(Debug)]
 /// Used to run replacement query on every text file present in a given path
 /// ```rust
-/// use ruplacer::{DirectoryPatcher, Query, Settings, Stats};
+/// use ruplacer::{Console, DirectoryPatcher, Query, Settings, Stats};
 /// use std::path::PathBuf;
 ///
 /// let settings = Settings{
@@ -17,7 +18,8 @@ use crate::stats::Stats;
 ///     .. Default::default()
 /// };
 /// let path = PathBuf::from("tests/data");
-/// let mut directory_patcher = DirectoryPatcher::new(&path, &settings);
+/// let console = Console::new();
+/// let mut directory_patcher = DirectoryPatcher::new(&console, &path, &settings);
 ///
 /// let query = Query::substring("old", "new");
 /// directory_patcher.run(&query).unwrap();
@@ -29,13 +31,19 @@ use crate::stats::Stats;
 pub struct DirectoryPatcher<'a> {
     path: &'a Path,
     settings: &'a Settings,
+    console: &'a Console,
     stats: Stats,
 }
 
 impl<'a> DirectoryPatcher<'a> {
-    pub fn new(path: &'a Path, settings: &'a Settings) -> DirectoryPatcher<'a> {
+    pub fn new(
+        console: &'a Console,
+        path: &'a Path,
+        settings: &'a Settings,
+    ) -> DirectoryPatcher<'a> {
         let stats = Stats::default();
         DirectoryPatcher {
+            console,
             path,
             settings,
             stats,
@@ -61,14 +69,14 @@ impl<'a> DirectoryPatcher<'a> {
     }
 
     pub(crate) fn patch_file(&mut self, entry: &Path, query: &Query) -> Result<()> {
-        let file_patcher = FilePatcher::new(entry, query)?;
+        let file_patcher = FilePatcher::new(self.console, entry, query)?;
         let file_patcher = match file_patcher {
             None => return Ok(()),
             Some(f) => f,
         };
         let num_replacements = file_patcher.num_replacements();
         if num_replacements != 0 {
-            println!();
+            self.console.print_message("\n");
         }
         let num_lines = file_patcher.num_lines();
         self.stats.update(num_lines, num_replacements);

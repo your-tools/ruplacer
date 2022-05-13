@@ -5,6 +5,7 @@ use std::process::Command;
 use anyhow::Result;
 use tempfile::TempDir;
 
+use ruplacer::Console;
 use ruplacer::Query;
 use ruplacer::Settings;
 use ruplacer::{DirectoryPatcher, Stats};
@@ -45,7 +46,8 @@ fn assert_not_replaced(path: &Path) {
 }
 
 fn run_ruplacer(data_path: &Path, settings: Settings) -> Result<Stats> {
-    let mut directory_patcher = DirectoryPatcher::new(data_path, &settings);
+    let console = Console::new();
+    let mut directory_patcher = DirectoryPatcher::new(&console, data_path, &settings);
     directory_patcher.run(&Query::substring("old", "new"))?;
     Ok(directory_patcher.stats())
 }

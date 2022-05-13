@@ -5,7 +5,7 @@ use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::process;
 
-use crate::{replace, DirectoryPatcher, Query, Settings, Stats};
+use crate::{console::Verbosity, replace, Console, DirectoryPatcher, Query, Settings};
 
 #[derive(Debug)]
 enum ColorWhen {
@@ -51,6 +51,12 @@ EXAMPLES:
 struct Options {
     #[clap(long = "go", help = "Write the changes to the filesystem")]
     go: bool,
+
+    #[clap(
+        long = "quiet",
+        help = "Don't show any output (except in case of errors)"
+    )]
+    quiet: bool,
 
     #[clap(help = "The pattern to search for")]
     pattern: String,
@@ -148,15 +154,6 @@ fn configure_color(when: &ColorWhen) {
     }
 }
 
-fn print_stats(stats: &Stats, dry_run: bool) {
-    if dry_run {
-        print!("Would perform ")
-    } else {
-        print!("Performed ")
-    }
-    println!("{}", stats)
-}
-
 fn on_type_list() {
     println!("Known file types:");
     let mut types_builder = ignore::types::TypesBuilder::new();
@@ -174,6 +171,7 @@ pub fn run() -> Result<()> {
         color_when,
         file_type_list,
         go,
+        quiet,
         hidden,
         ignored,
         ignored_file_types,
@@ -192,6 +190,12 @@ pub fn run() -> Result<()> {
     }
 
     let dry_run = !go;
+    let verbosity = if quiet {
+        Verbosity::Quiet
+    } else {
+        Verbosity::Normal
+    };
+    let console = Console::with_verbosity(verbosity);
 
     let color_when = &color_when.unwrap_or(ColorWhen::Auto);
     configure_color(color_when);
@@ -205,6 +209,7 @@ pub fn run() -> Result<()> {
     };
 
     let settings = Settings {
+        verbosity,
         dry_run,
         hidden,
         ignored,
@@ -216,7 +221,7 @@ pub fn run() -> Result<()> {
     if path == PathBuf::from("-") {
         run_on_stdin(query)
     } else {
-        run_on_directory(path, settings, query)
+        run_on_directory(console, path, settings, query)
     }
 }
 
@@ -234,21 +239,36 @@ fn run_on_stdin(query: Query) -> Result<()> {
     Ok(())
 }
 
-fn run_on_directory(path: PathBuf, settings: Settings, query: Query) -> Result<()> {
+fn run_on_directory(
+    console: Console,
+    path: PathBuf,
+    settings: Settings,
+    query: Query,
+) -> Result<()> {
     let dry_run = settings.dry_run;
-    let mut directory_patcher = DirectoryPatcher::new(&path, &settings);
+    let mut directory_patcher = DirectoryPatcher::new(&console, &path, &settings);
     directory_patcher.run(&query)?;
     let stats = directory_patcher.stats();
     if stats.total_replacements() == 0 {
-        #[allow(clippy::print_literal)]
-        {
-            eprintln!("{}: {}", "Error".bold().red(), "nothing found to replace");
-        }
+        console.print_error(&format!(
+            "{}: {}",
+            "Error".bold().red(),
+            "nothing found to replace"
+        ));
         process::exit(2);
     }
-    print_stats(&stats, dry_run);
+
+    let stats = &stats;
+    let message = if dry_run {
+        "Would perform "
+    } else {
+        "Performed "
+    };
+    console.print_message(message);
+    console.print_message(&format!("{stats}\n"));
+
     if dry_run {
-        println!("Re-run ruplacer with --go to write these changes to the filesystem");
+        console.print_message("Re-run ruplacer with --go to write these changes to the filesystem");
     }
     Ok(())
 }
