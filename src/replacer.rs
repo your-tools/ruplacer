@@ -51,7 +51,7 @@ impl<'a> Replacement<'a> {
 
     /// Return the input string
     pub fn input(&self) -> &str {
-        &self.output
+        self.input
     }
 
     pub(crate) fn num_fragments(&self) -> usize {
