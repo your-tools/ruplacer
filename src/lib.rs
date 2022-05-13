@@ -10,3 +10,5 @@ pub use directory_patcher::DirectoryPatcher;
 pub use file_patcher::FilePatcher;
 pub use query::Query;
 pub use stats::Stats;
+mod app;
+pub use app::run;
