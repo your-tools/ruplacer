@@ -5,18 +5,20 @@ use std::path::{Path, PathBuf};
 
 use crate::query::Query;
 use crate::replace;
+use crate::Console;
 
 /// Run replacement query on a given file
 ///
 /// Example, assuming the `data.txt` file contains 'This is my old car'
 /// ```rust
-/// use ruplacer::{FilePatcher, Query};
+/// use ruplacer::{Console, FilePatcher, Query};
 /// use std::path::PathBuf;
 ///
 /// # std::fs::write("data.txt", "This is my old car.").unwrap();
 /// let file = PathBuf::from("data.txt");
 /// let query = Query::substring("old", "new");
-/// let file_patcher = FilePatcher::new(&file, &query).unwrap();
+/// let console = Console::new();
+/// let file_patcher = FilePatcher::new(&console, &file, &query).unwrap();
 /// file_patcher.unwrap().run().unwrap();
 ///
 /// let new_contents = std::fs::read_to_string("data.txt").unwrap();
@@ -30,7 +32,7 @@ pub struct FilePatcher {
 }
 
 impl FilePatcher {
-    pub fn new(path: &Path, query: &Query) -> Result<Option<FilePatcher>> {
+    pub fn new(console: &Console, path: &Path, query: &Query) -> Result<Option<FilePatcher>> {
         let mut num_replacements = 0;
         let mut num_lines = 0;
         let file =
@@ -55,7 +57,7 @@ impl FilePatcher {
                     let lineno = num + 1;
                     let prefix = format!("{}:{} ", path.display(), lineno);
                     let new_line = replacement.output();
-                    replacement.print_self(&prefix);
+                    replacement.print_self(console, &prefix);
                     new_contents.push_str(new_line);
                 }
             }
@@ -131,7 +133,8 @@ mod tests {
         let file_path = temp_dir.path().join("without-trailing-newline.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line").unwrap();
         let query = Query::substring("old", "new");
-        let file_patcher = FilePatcher::new(&file_path, &query).unwrap();
+        let console = Console::new();
+        let file_patcher = FilePatcher::new(&console, &file_path, &query).unwrap();
         file_patcher.unwrap().run().unwrap();
         let actual = fs::read_to_string(&file_path).unwrap();
         let expected = "first line\nI say: new is nice\nlast line";
@@ -140,7 +143,7 @@ mod tests {
         let file_path = temp_dir.path().join("with-trailing-newline.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line\n").unwrap();
         let query = Query::substring("old", "new");
-        let file_patcher = FilePatcher::new(&file_path, &query).unwrap();
+        let file_patcher = FilePatcher::new(&console, &file_path, &query).unwrap();
         file_patcher.unwrap().run().unwrap();
         let actual = fs::read_to_string(&file_path).unwrap();
         let expected = "first line\nI say: new is nice\nlast line\n";

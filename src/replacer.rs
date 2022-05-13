@@ -1,4 +1,5 @@
 use crate::query::Query;
+use crate::Console;
 use colored::*;
 use regex::Regex;
 
@@ -59,25 +60,33 @@ impl<'a> Replacement<'a> {
 
     /// Print the replacement as two lines (red then green)
     /// ```
-    /// use ruplacer::{Query, replace};
+    /// use ruplacer::{Console, Query, replace};
     /// let input = "let foo_bar = FooBar::new();";
     /// let query = Query::subvert("foo_bar", "spam_eggs");
+    /// let console = Console::new();
     /// let replacement = replace(input, &query).unwrap();
-    /// replacement.print_self("foo.rs:3");
+    /// replacement.print_self(&console, "foo.rs:3");
     /// // outputs:
     /// // foo.rs:3 let foo_bar = FooBar::new()
     /// // foo.rs:3 let spam_eggs = SpamEggs::new()
     /// ```
-    pub fn print_self(&self, prefix: &str) {
+    pub fn print_self(&self, console: &Console, prefix: &str) {
         let red_underline = { |x: &str| x.red().underline() };
         let input_fragments = self.fragments.into_iter().map(|x| &x.0);
         let red_prefix = format!("{}{}", prefix, "- ".red());
-        Self::print_fragments(&red_prefix, red_underline, self.input, input_fragments);
+        Self::print_fragments(
+            console,
+            &red_prefix,
+            red_underline,
+            self.input,
+            input_fragments,
+        );
 
         let green_underline = { |x: &str| x.green().underline() };
         let green_prefix = format!("{}{}", prefix, "+ ".green());
         let output_fragments = self.fragments.into_iter().map(|x| &x.1);
         Self::print_fragments(
+            console,
             &green_prefix,
             green_underline,
             &self.output,
@@ -86,6 +95,7 @@ impl<'a> Replacement<'a> {
     }
 
     fn print_fragments<'f, C>(
+        console: &Console,
         prefix: &str,
         color: C,
         line: &str,
@@ -93,22 +103,22 @@ impl<'a> Replacement<'a> {
     ) where
         C: Fn(&str) -> ColoredString,
     {
-        print!("{}", prefix);
+        console.print_message(prefix);
         let mut current_index = 0;
         for (i, fragment) in fragments.enumerate() {
             let Fragment { index, text } = fragment;
             // Whitespace between prefix and the first fragment does not matter
             if i == 0 {
-                print!("{}", &line[current_index..*index].trim_start());
+                console.print_message((&line[current_index..*index].trim_start()).as_ref());
             } else {
-                print!("{}", &line[current_index..*index]);
+                console.print_message(&line[current_index..*index]);
             }
-            print!("{}", color(text));
+            console.print_message(&format!("{}", color(text)));
             current_index = index + text.len();
         }
-        print!("{}", &line[current_index..]);
+        console.print_message(&line[current_index..]);
         if !line.ends_with('\n') {
-            println!()
+            console.print_message("\n");
         }
     }
 }
@@ -370,7 +380,8 @@ mod tests {
         let replacement = "new";
         let query = Query::substring(pattern, replacement);
         let replacement = replace(input, &query).unwrap();
-        replacement.print_self("foo.txt:3 ");
+        let console = Console::new();
+        replacement.print_self(&console, "foo.txt:3 ");
     }
 
     #[test]
