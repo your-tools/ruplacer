@@ -4,6 +4,7 @@
 * **Breaking**: `DirectoryPatcher::new()`, `FilePatcher::new()` and
   `Replacement::print_self()` now take an additional `&Console`
   argument.
+* Add a `Console` struct and a `Verbosity` enum.
 
 # 0.6.5 (2022-05-06)
 
