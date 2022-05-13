@@ -1,3 +1,10 @@
+# 0.7.0 (2022-05-13)
+
+* Add `--quiet` option. Suggested by @kypm
+* **Breaking**: `DirectoryPatcher::new()`, `FilePatcher::new()` and
+  `Replacement::print_self()` now take an additional `&Console`
+  argument.
+
 # 0.6.5 (2022-05-06)
 
 * Add `-V, --version` option. Patch by @homeworkprod
