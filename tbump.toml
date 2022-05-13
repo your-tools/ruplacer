@@ -1,7 +1,7 @@
 github_url = "https://github.com/dmerejkowsky/ruplacer"
 
 [version]
-current = "0.6.5"
+current = "0.7.0"
 
 # Example of a semver regexp.
 # Make sure this matches current_version before
