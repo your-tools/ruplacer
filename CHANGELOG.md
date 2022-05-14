@@ -1,3 +1,8 @@
+# 0.8.0 (2022-05-14)
+
+* **Breaking**: replace ``Replacement::print_self()`` with ``Console::print_replacement(prefix, replacement)``.
+
+
 # 0.7.0 (2022-05-13)
 
 * Add `--quiet` option. Suggested by @kypm
