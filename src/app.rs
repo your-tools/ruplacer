@@ -68,7 +68,7 @@ struct Options {
         parse(from_os_str),
         help = "The source path. Defaults to the working directory"
     )]
-    path: Option<PathBuf>,
+    paths: Vec<PathBuf>,
 
     #[clap(
         long = "--no-regex",
@@ -176,7 +176,7 @@ pub fn run() -> Result<()> {
         ignored,
         ignored_file_types,
         no_regex,
-        path,
+        mut paths,
         pattern,
         replacement,
         selected_file_types,
@@ -217,11 +217,13 @@ pub fn run() -> Result<()> {
         ignored_file_types,
     };
 
-    let path = path.unwrap_or_else(|| Path::new(".").to_path_buf());
-    if path == PathBuf::from("-") {
+    if paths.is_empty() {
+        paths.push(Path::new(".").to_path_buf());
+    }
+    if paths.len() == 1 && paths.first().unwrap() == &PathBuf::from("-") {
         run_on_stdin(query)
     } else {
-        run_on_directory(console, path, settings, query)
+        run_on_directory(console, paths, settings, query)
     }
 }
 
@@ -241,12 +243,16 @@ fn run_on_stdin(query: Query) -> Result<()> {
 
 fn run_on_directory(
     console: Console,
-    path: PathBuf,
+    paths: Vec<PathBuf>,
     settings: Settings,
     query: Query,
 ) -> Result<()> {
     let dry_run = settings.dry_run;
-    let mut directory_patcher = DirectoryPatcher::new(&console, &path, &settings);
+    let mut directory_patcher = DirectoryPatcher::new(
+        &console,
+        Box::new(paths.iter().map(|p| -> &Path { &*p })),
+        &settings,
+    );
     directory_patcher.run(&query)?;
     let stats = directory_patcher.stats();
     if stats.total_replacements() == 0 {
