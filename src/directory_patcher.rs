@@ -86,19 +86,25 @@ impl<'a> DirectoryPatcher<'a> {
         self.stats
     }
 
-    pub(crate) fn patch_file(&mut self, entry: &Path, query: &Query) -> Result<()> {
-        let file_patcher = FilePatcher::new(self.console, entry, query)?;
+    pub(crate) fn patch_file(
+        console: &Console,
+        stats: &Stats,
+        settings: &Settings,
+        entry: &Path,
+        query: &Query,
+    ) -> Result<()> {
+        let file_patcher = FilePatcher::new(console, entry, query)?;
         let file_patcher = match file_patcher {
             None => return Ok(()),
             Some(f) => f,
         };
         let num_replacements = file_patcher.num_replacements();
         if num_replacements != 0 {
-            self.console.print_message("\n");
+            console.print_message("\n");
         }
         let num_lines = file_patcher.num_lines();
-        self.stats.update(num_lines, num_replacements);
-        if self.settings.dry_run {
+        stats.update(num_lines, num_replacements);
+        if settings.dry_run {
             return Ok(());
         }
         file_patcher.run()?;
