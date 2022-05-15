@@ -1,11 +1,19 @@
 use anyhow::{Context, Result};
+use dyn_clone::DynClone;
+use std::fmt::Debug;
+use std::fs;
 use std::path::Path;
+use std::sync::{Arc, Mutex};
 
 use crate::console::Console;
 use crate::file_patcher::FilePatcher;
 use crate::query::Query;
 use crate::settings::Settings;
 use crate::stats::Stats;
+
+use self::path_deduplicator::PathDeduplicator;
+
+mod path_deduplicator;
 
 #[derive(Debug)]
 /// Used to run replacement query on every text file present in a given path
@@ -29,22 +37,32 @@ use crate::stats::Stats;
 // Note: keep the dry_run: true in the doc test above or the integration test
 // will fail ...
 pub struct DirectoryPatcher<'a> {
-    path: &'a Path,
+    paths: Box<dyn PathsIter<'a> + 'a>,
     settings: &'a Settings,
     console: &'a Console,
     stats: Stats,
 }
 
+pub trait PathsIter<'a>
+where
+    Self: Debug + DynClone + Iterator<Item = &'a Path> + Send,
+{
+}
+
+dyn_clone::clone_trait_object!(<'a> PathsIter<'a>);
+
+impl<'a, T> PathsIter<'a> for T where Self: Debug + DynClone + Iterator<Item = &'a Path> + Send + 'a {}
+
 impl<'a> DirectoryPatcher<'a> {
     pub fn new(
         console: &'a Console,
-        path: &'a Path,
+        paths: Box<dyn PathsIter<'a> + 'a>,
         settings: &'a Settings,
     ) -> DirectoryPatcher<'a> {
         let stats = Stats::default();
         DirectoryPatcher {
             console,
-            path,
+            paths,
             settings,
             stats,
         }
@@ -116,7 +134,19 @@ impl<'a> DirectoryPatcher<'a> {
             }
         }
         let types_matcher = types_builder.build()?;
-        let mut walk_builder = ignore::WalkBuilder::new(&self.path);
+
+        let mut paths = self.paths.clone();
+
+        let mut walk_builder = ignore::WalkBuilder::new(
+            paths
+                .next()
+                .expect("internal error: expected at least one path"),
+        );
+
+        for path in paths {
+            walk_builder.add(path);
+        }
+
         walk_builder.types(types_matcher);
         // Note: the walk_builder configures the "ignore" settings of the Walker,
         // hence the negations
@@ -126,6 +156,16 @@ impl<'a> DirectoryPatcher<'a> {
         if self.settings.hidden {
             walk_builder.hidden(false);
         }
+
+        let path_deduplicator = Arc::new(Mutex::new(PathDeduplicator::new()));
+        walk_builder.filter_entry(move |dir_entry| {
+            fs::canonicalize(dir_entry.path()).map_or(false, |abs_path_buf| {
+                let was_not_seen_before =
+                    path_deduplicator.lock().unwrap().insert_path(&abs_path_buf);
+                was_not_seen_before
+            })
+        });
+
         Ok(walk_builder.build())
     }
 }
