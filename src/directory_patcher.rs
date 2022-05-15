@@ -1,11 +1,17 @@
 use anyhow::{Context, Result};
+use std::fs;
 use std::path::Path;
+use std::sync::{Arc, Mutex};
 
 use crate::console::Console;
 use crate::file_patcher::FilePatcher;
 use crate::query::Query;
 use crate::settings::Settings;
 use crate::stats::Stats;
+
+use self::path_deduplicator::PathDeduplicator;
+
+mod path_deduplicator;
 
 #[derive(Debug)]
 /// Used to run replacement query on every text file present in a given path
@@ -126,6 +132,16 @@ impl<'a> DirectoryPatcher<'a> {
         if self.settings.hidden {
             walk_builder.hidden(false);
         }
+
+        let path_deduplicator = Arc::new(Mutex::new(PathDeduplicator::new()));
+        walk_builder.filter_entry(move |dir_entry| {
+            fs::canonicalize(dir_entry.path()).map_or(false, |abs_path_buf| {
+                let was_not_seen_before =
+                    path_deduplicator.lock().unwrap().insert_path(&abs_path_buf);
+                was_not_seen_before
+            })
+        });
+
         Ok(walk_builder.build())
     }
 }
