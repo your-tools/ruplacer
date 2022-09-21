@@ -166,10 +166,29 @@ fn on_type_list() {
 }
 
 pub fn run() -> Result<()> {
-    let opt = Options::parse();
+    // PATTERN and REPLACEMENT are always required, except
+    // when --type-list is used
+    //
+    // So we cach the ErrorKind::MissingRequiredArgument error
+    // to handle the exception, rather than having the usage
+    // looking like `ruplacer [OPTIONS]`
+    let mut args = std::env::args();
+    let parsed = Options::try_parse();
+    let opt = match parsed {
+        Ok(o) => o,
+        Err(e) => {
+            let used_typed_list = args.any(|x| &x == "--type-list");
+            if used_typed_list {
+                on_type_list();
+                return Ok(());
+            } else {
+                e.exit();
+            }
+        }
+    };
     let Options {
         color_when,
-        file_type_list,
+        file_type_list: _,
         go,
         quiet,
         hidden,
@@ -183,11 +202,6 @@ pub fn run() -> Result<()> {
         subvert,
         word_regex,
     } = opt;
-
-    if file_type_list {
-        on_type_list();
-        return Ok(());
-    }
 
     let dry_run = !go;
     let verbosity = if quiet {
