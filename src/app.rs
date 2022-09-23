@@ -4,10 +4,11 @@ use colored::*;
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::process;
+use std::str::FromStr;
 
 use crate::{console::Verbosity, replace, Console, DirectoryPatcher, Query, Settings};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum ColorWhen {
     Always,
     Never,
@@ -28,11 +29,11 @@ impl std::str::FromStr for ColorWhen {
 }
 
 #[derive(Debug, Parser)]
-#[clap(
+#[command(
     name = "ruplacer",
     version,
     after_help = "
-EXAMPLES:
+Examples:
     Replace 'foo' with 'bar'
     $ ruplacer foo bar
 
@@ -49,75 +50,73 @@ EXAMPLES:
 "
 )]
 struct Options {
-    #[clap(long = "go", help = "Write the changes to the filesystem")]
+    #[arg(long = "go", help = "Write the changes to the filesystem")]
     go: bool,
 
-    #[clap(
+    #[arg(
         long = "quiet",
         help = "Don't show any output (except in case of errors)"
     )]
     quiet: bool,
 
-    #[clap(help = "The pattern to search for")]
+    #[arg(help = "The pattern to search for")]
     pattern: String,
 
-    #[clap(help = "The replacement")]
+    #[arg(help = "The replacement")]
     replacement: String,
 
-    #[clap(
-        parse(from_os_str),
+    #[arg(
+        value_parser = PathBuf::from_str,
         help = "The source path. Defaults to the working directory"
     )]
     path: Option<PathBuf>,
 
-    #[clap(
-        long = "--no-regex",
+    #[arg(
+        long = "no-regex",
         help = "Interpret pattern as a raw string. Default is: regex"
     )]
     no_regex: bool,
 
-    #[clap(long = "--hidden", help = "Also patch hidden files")]
+    #[arg(long = "hidden", help = "Also patch hidden files")]
     hidden: bool,
 
-    #[clap(long = "--ignored", help = "Also patch ignored files")]
+    #[arg(long = "ignored", help = "Also patch ignored files")]
     ignored: bool,
 
-    #[clap(
-        long = "--word-regex",
+    #[arg(
+        long = "word-regex",
         short = 'w',
         help = "Interpret pattern as a 'word' regex"
     )]
     word_regex: bool,
 
-    #[clap(
-        long = "--subvert",
+    #[arg(
+        long = "subvert",
         help = "Replace all variants of the pattern (snake_case, CamelCase and so on)"
     )]
     subvert: bool,
 
-    #[clap(
+    #[arg(
         short = 't',
         long = "type",
         help = "Only search files matching <file_type> or glob pattern.",
-        multiple_occurrences = true,
-        number_of_values = 1
+        num_args= 0..,
     )]
     selected_file_types: Vec<String>,
 
-    #[clap(
+    #[arg(
         short = 'T',
         long = "type-not",
         help = "Ignore files matching <file_type> or glob pattern.",
-        multiple_occurrences = true,
-        number_of_values = 1
+        num_args = 0..,
     )]
     ignored_file_types: Vec<String>,
 
-    #[clap(long = "type-list", help = "List the known file types")]
+    #[arg(long = "type-list", help = "List the known file types")]
     file_type_list: bool,
 
-    #[clap(
-        long = "--color",
+    #[arg(
+        long = "color",
         help = "Whether to enable colorful output. Choose between 'always', 'auto', or 'never'. Default is 'auto'"
     )]
     color_when: Option<ColorWhen>,
