@@ -8,7 +8,7 @@ readme = "README.md"
 edition = "2021"
 keywords = ["ruplacer", "find", "grep", "command", "line"]
 categories = ["command-line-utilities"]
-repository = "https://github.com/dmerejkowsky/ruplacer"
+repository = "https://github.com/your-tools/ruplacer"
 
 [package.metadata.deb]
 extended-description = "Find and replace text in source files"
