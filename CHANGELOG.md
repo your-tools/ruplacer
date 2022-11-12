@@ -1,3 +1,8 @@
+# 0.8.1 (2022-11-12)
+
+* Bump to `clap` 4
+* Fix using `--type-list` on the command-line (#100)
+
 # 0.8.0 (2022-05-14)
 
 * **Breaking**: replace ``Replacement::print_self()`` with ``Console::print_replacement(prefix, replacement)``.
