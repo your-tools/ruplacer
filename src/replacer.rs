@@ -136,7 +136,7 @@ impl<'a> SubstringReplacer<'a> {
 
 impl<'a> Replacer for SubstringReplacer<'a> {
     fn replace(&self, buff: &str) -> Option<(usize, String, String)> {
-        let index = buff.find(&self.pattern)?;
+        let index = buff.find(self.pattern)?;
         Some((
             index,
             self.pattern.to_string(),

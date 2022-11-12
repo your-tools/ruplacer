@@ -36,7 +36,7 @@ impl FilePatcher {
         let mut num_replacements = 0;
         let mut num_lines = 0;
         let file =
-            File::open(&path).with_context(|| format!("Could not open {}", path.display()))?;
+            File::open(path).with_context(|| format!("Could not open {}", path.display()))?;
         let reader = BufReader::new(file);
         let mut new_contents = String::new();
         // Note: not using lines() because we need to preserve the line endings

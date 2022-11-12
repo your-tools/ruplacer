@@ -116,7 +116,7 @@ impl<'a> DirectoryPatcher<'a> {
             }
         }
         let types_matcher = types_builder.build()?;
-        let mut walk_builder = ignore::WalkBuilder::new(&self.path);
+        let mut walk_builder = ignore::WalkBuilder::new(self.path);
         walk_builder.types(types_matcher);
         // Note: the walk_builder configures the "ignore" settings of the Walker,
         // hence the negations

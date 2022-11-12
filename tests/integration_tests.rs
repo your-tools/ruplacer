@@ -14,7 +14,7 @@ fn setup_test(tmp_dir: &TempDir) -> PathBuf {
     let tmp_path = tmp_dir.path();
     #[cfg(not(target_os = "windows"))]
     let status = Command::new("cp")
-        .args(&["-R", "tests/data", &tmp_path.to_string_lossy()])
+        .args(["-R", "tests/data", &tmp_path.to_string_lossy()])
         .status()
         .expect("Failed to execute process");
     #[cfg(target_os = "windows")]
@@ -33,14 +33,14 @@ fn setup_test(tmp_dir: &TempDir) -> PathBuf {
 
 fn assert_replaced(path: &Path) {
     let contents =
-        fs::read_to_string(&path).unwrap_or_else(|_| panic!("Could not read from {:?}", path));
+        fs::read_to_string(path).unwrap_or_else(|_| panic!("Could not read from {:?}", path));
     assert!(contents.contains("new"));
     assert!(!contents.contains("old"));
 }
 
 fn assert_not_replaced(path: &Path) {
     let contents =
-        fs::read_to_string(&path).unwrap_or_else(|_| panic!("Could not read from {:?}", path));
+        fs::read_to_string(path).unwrap_or_else(|_| panic!("Could not read from {:?}", path));
     assert!(!contents.contains("new"));
     assert!(contents.contains("old"));
 }
