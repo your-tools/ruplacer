@@ -281,7 +281,8 @@ fn run_on_directory(
     console.print_message(&format!("{stats}\n"));
 
     if dry_run {
-        console.print_message("Re-run ruplacer with --go to write these changes to the filesystem");
+        console
+            .print_message("Re-run ruplacer with --go to write these changes to the filesystem\n");
     }
     Ok(())
 }
