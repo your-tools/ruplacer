@@ -32,6 +32,8 @@ pub struct FilePatcher {
 }
 
 impl FilePatcher {
+    /// Try and build a `FilePatcher` for the given path and query
+    /// Return Ok(None) if there is nothing to replace in the file
     pub fn new(console: &Console, path: &Path, query: &Query) -> Result<Option<FilePatcher>> {
         let mut num_replacements = 0;
         let mut num_lines = 0;
@@ -62,12 +64,16 @@ impl FilePatcher {
                 }
             }
         }
-        Ok(Some(FilePatcher {
-            path: path.to_path_buf(),
-            new_contents,
-            num_lines,
-            num_replacements,
-        }))
+        if num_replacements == 0 {
+            Ok(None)
+        } else {
+            Ok(Some(FilePatcher {
+                path: path.to_path_buf(),
+                new_contents,
+                num_lines,
+                num_replacements,
+            }))
+        }
     }
 
     pub(crate) fn num_replacements(&self) -> usize {
