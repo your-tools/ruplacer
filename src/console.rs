@@ -2,16 +2,11 @@ use colored::*;
 
 use crate::{replacer::Fragment, Replacement};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Verbosity {
     Quiet,
+    #[default]
     Normal,
-}
-
-impl Default for Verbosity {
-    fn default() -> Self {
-        Verbosity::Normal
-    }
 }
 
 #[derive(Debug, Default)]
