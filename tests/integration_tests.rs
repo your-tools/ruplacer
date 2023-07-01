@@ -22,6 +22,7 @@ fn setup_test(tmp_dir: &TempDir) -> PathBuf {
         .args(&[
             "/E",
             "/I",
+            "/Q",
             "tests\\data",
             &tmp_path.join("data").to_string_lossy(),
         ])
