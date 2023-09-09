@@ -1,3 +1,9 @@
+# 0.8.2 (2023-09-09)
+
+* Fix #102: don't write files when not required
+* Add missing new line in output when `--dry-run` is used
+* Update dependencies
+
 # 0.8.1 (2022-11-12)
 
 * Bump to `clap` 4
