@@ -393,7 +393,6 @@ version = "0.8.1"
 dependencies = [
  "Inflector",
  "anyhow",
- "atty",
  "clap",
  "colored",
  "ignore",

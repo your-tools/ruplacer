@@ -15,7 +15,6 @@ extended-description = "Find and replace text in source files"
 
 [dependencies]
 anyhow = "1.0.32"
-atty = "0.2.14"
 clap = { version = "4.3.11", features = ["derive"] }
 colored = "2.0"
 ignore = "0.4"
