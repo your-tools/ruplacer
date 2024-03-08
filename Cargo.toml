@@ -1,6 +1,6 @@
 [package]
 name = "ruplacer"
-version = "0.8.2"
+version = "0.8.3"
 authors = ["Dimitri Merejkowsky <dimitri@dmerej.info>"]
 description = "Find and replace text in source files"
 license = "BSD-3-Clause"
