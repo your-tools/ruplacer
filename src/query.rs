@@ -1,10 +1,3 @@
-use inflector::cases::camelcase::*;
-use inflector::cases::kebabcase::*;
-use inflector::cases::pascalcase::*;
-use inflector::cases::screamingsnakecase::*;
-use inflector::cases::snakecase::*;
-use inflector::cases::traincase::*;
-
 /// A replacement Query
 pub enum Query {
     /// Substitute `old` with `new`
@@ -15,7 +8,7 @@ pub enum Query {
     /// using case conversion methods.
     /// This allows replacing FooBar with SpamEggs and foo_bar with spam_eggs
     /// using only one query
-    Subvert(Vec<(String, String)>),
+    Subvert(String, String),
 }
 
 impl Query {
@@ -31,22 +24,6 @@ impl Query {
 
     /// Constructor for the Subvert variant
     pub fn subvert(pattern: &str, replacement: &str) -> Self {
-        fn to_ada_case(input: &str) -> String {
-            to_train_case(input).replace('-', "_")
-        }
-
-        let mut items = vec![];
-        for function in &[
-            to_ada_case,
-            to_camel_case,
-            to_kebab_case,
-            to_pascal_case,
-            to_screaming_snake_case,
-            to_snake_case,
-            to_train_case,
-        ] {
-            items.push((function(pattern), function(replacement)));
-        }
-        Self::Subvert(items)
+        Self::Subvert(pattern.to_string(), replacement.to_string())
     }
 }

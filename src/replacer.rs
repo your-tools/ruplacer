@@ -1,4 +1,10 @@
 use crate::query::Query;
+use inflector::cases::camelcase::to_camel_case;
+use inflector::cases::kebabcase::to_kebab_case;
+use inflector::cases::pascalcase::to_pascal_case;
+use inflector::cases::screamingsnakecase::to_screaming_snake_case;
+use inflector::cases::snakecase::to_snake_case;
+use inflector::cases::traincase::to_train_case;
 
 use regex::Regex;
 
@@ -227,8 +233,25 @@ fn get_fragments(input: &str, query: &Query) -> Fragments {
             let finder = RegexReplacer::new(regex, replacement);
             get_fragments_with_finder(input, finder)
         }
-        Query::Subvert(items) => {
-            let finder = SubvertReplacer::new(items);
+        Query::Subvert(pattern, replacement) => {
+            fn to_ada_case(input: &str) -> String {
+                to_train_case(input).replace('-', "_")
+            }
+
+            let mut items = vec![];
+            for function in &[
+                to_ada_case,
+                to_camel_case,
+                to_kebab_case,
+                to_pascal_case,
+                to_screaming_snake_case,
+                to_snake_case,
+                to_train_case,
+            ] {
+                items.push((function(pattern), function(replacement)));
+            }
+
+            let finder = SubvertReplacer::new(&items);
             get_fragments_with_finder(input, finder)
         }
     }
