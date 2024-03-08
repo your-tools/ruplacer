@@ -1,3 +1,7 @@
+# 0.8.3 (2024-03-08)
+
+* Switch to `cargo-dist` to make releases
+
 # 0.8.2 (2023-09-09)
 
 * Fix #102: don't write files when not required
