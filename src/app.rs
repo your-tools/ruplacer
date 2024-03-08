@@ -165,6 +165,7 @@ fn on_type_list() {
     }
 }
 
+/// Main entry point
 pub fn run() -> Result<()> {
     // PATTERN and REPLACEMENT are always required, except
     // when --type-list is used

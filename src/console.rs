@@ -3,6 +3,7 @@ use colored::*;
 use crate::{replacer::Fragment, Replacement};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+/// Control how much information ruplacer prints to standard output
 pub enum Verbosity {
     Quiet,
     #[default]
