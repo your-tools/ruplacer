@@ -121,7 +121,6 @@ impl<T: BufRead> Iterator for LineIterator<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Query;
     use std::fs;
     use tempfile::TempDir;
 
