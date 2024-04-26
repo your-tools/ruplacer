@@ -137,4 +137,4 @@ $ ruplacer old new --type-not foo*bar.c
 
 Each "file type" is just a list of glob pattern. For instance: the `cpp` file type matches `*.C`, `*.H`, `*.cc`, `*.cpp` and so on ...
 
-You can see the whole list by using `ruplacer --file-types`.
+You can see the whole list by using `ruplacer --type-list`.
