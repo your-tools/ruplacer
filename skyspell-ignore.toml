@@ -1,6 +1,4 @@
-patterns = [
-  "Cargo.lock"
-]
+patterns = ["Cargo.lock"]
 project = [
     "CLICOLOR",
     "Inflector",
@@ -9,9 +7,11 @@ project = [
     "Ruplacer",
     "Sem",
     "Ver",
+    "camelcase",
     "inflector",
     "lto",
     "matcher",
+    "pascalcase",
     "patcher",
     "replacen",
     "replacer",
