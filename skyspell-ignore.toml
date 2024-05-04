@@ -1,0 +1,56 @@
+patterns = [
+  "Cargo.lock"
+]
+project = [
+    "CLICOLOR",
+    "Inflector",
+    "Patcher",
+    "Replacer",
+    "Ruplacer",
+    "Sem",
+    "Ver",
+    "inflector",
+    "lto",
+    "matcher",
+    "patcher",
+    "replacen",
+    "replacer",
+    "ruplacer",
+    "ruplacer's",
+    "rustup",
+    "screamingsnakecase",
+    "snakecase",
+    "tbump",
+    "tempfile",
+    "traincase",
+]
+
+[paths]
+"CHANGELOG.md" = [
+    "smallvec",
+    "struct",
+]
+"Cargo.toml" = ["aarch"]
+"README.md" = [
+    "Pre",
+    "tata",
+    "toto",
+]
+"src/replacer.rs" = [
+    "Iter",
+    "c'est",
+    "café",
+    "cafés",
+    "des",
+    "le",
+    "meilleur",
+    "nocapture",
+    "thé",
+    "thés",
+]
+"tests/integration_tests.rs" = [
+    "caf",
+    "cp",
+    "xcopy",
+    "xef",
+]
