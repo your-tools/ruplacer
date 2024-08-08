@@ -1,7 +1,7 @@
 /// A replacement Query
 pub enum Query {
     /// Substitute `old` with `new`
-    Substring(String, String),
+    Simple(String, String),
     /// Replace the parts matching the regex with `replacement`
     Regex(regex::Regex, String),
     /// Replace all instances of `pattern` with `replacement`, by
@@ -13,8 +13,8 @@ pub enum Query {
 
 impl Query {
     /// Constructor for the Substring variant
-    pub fn substring(old: &str, new: &str) -> Self {
-        Self::Substring(old.to_string(), new.to_string())
+    pub fn simple(old: &str, new: &str) -> Self {
+        Self::Simple(old.to_string(), new.to_string())
     }
 
     /// Constructor for the Regex variant

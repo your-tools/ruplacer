@@ -21,7 +21,7 @@ use crate::stats::Stats;
 /// let console = Console::new();
 /// let mut directory_patcher = DirectoryPatcher::new(&console, &path, &settings);
 ///
-/// let query = Query::substring("old", "new");
+/// let query = Query::simple("old", "new");
 /// directory_patcher.run(&query).unwrap();
 /// let stats = directory_patcher.stats();
 /// println!("Found {} matching lines", stats.matching_lines());

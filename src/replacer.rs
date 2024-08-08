@@ -17,7 +17,7 @@ use regex::Regex;
 /// use ruplacer::{Query, replace};
 ///
 /// let input = "this is some old text";
-/// let query = Query::substring("old", "new");
+/// let query = Query::simple("old", "new");
 /// let replacement = replace(input, &query).unwrap();
 /// let output = replacement.output();
 /// assert_eq!(output, "this is some new text");
@@ -225,7 +225,7 @@ impl<'a> Replacer for RegexReplacer<'a> {
 ///    - printing the patch
 fn get_fragments(input: &str, query: &Query) -> Fragments {
     match query {
-        Query::Substring(pattern, replacement) => {
+        Query::Simple(pattern, replacement) => {
             let finder = SubstringReplacer::new(pattern, replacement);
             get_fragments_with_finder(input, finder)
         }
@@ -313,11 +313,11 @@ mod tests {
     use regex::Regex;
 
     #[test]
-    fn test_substring_1() {
+    fn test_simple_1() {
         let input = "Mon thé c'est le meilleur des thés !";
         let pattern = "thé";
         let replacement = "café";
-        let query = Query::substring(pattern, replacement);
+        let query = Query::simple(pattern, replacement);
         let replacement = replace(input, &query).unwrap();
         assert_eq!(
             replacement.output(),
@@ -326,11 +326,11 @@ mod tests {
     }
 
     #[test]
-    fn test_substring_2() {
+    fn test_simple_2() {
         let input = "old old old";
         let pattern = "old";
         let replacement = "new";
-        let query = Query::substring(pattern, replacement);
+        let query = Query::simple(pattern, replacement);
         let replacement = replace(input, &query).unwrap();
         assert_eq!(replacement.output(), "new new new");
     }
@@ -342,7 +342,7 @@ mod tests {
         let input = "Top: old is nice";
         let pattern = "old";
         let replacement = "new";
-        let query = Query::substring(pattern, replacement);
+        let query = Query::simple(pattern, replacement);
         let replacement = replace(input, &query).unwrap();
         let console = Console::new();
         console.print_replacement("foo.txt:3 ", &replacement);

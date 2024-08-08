@@ -216,7 +216,7 @@ pub fn run() -> Result<()> {
     configure_color(color_when);
 
     let query = if no_regex {
-        Query::substring(&pattern, &replacement)
+        Query::simple(&pattern, &replacement)
     } else if subvert {
         Query::subvert(&pattern, &replacement)
     } else {

@@ -16,7 +16,7 @@ use crate::Console;
 ///
 /// # std::fs::write("data.txt", "This is my old car.").unwrap();
 /// let file = PathBuf::from("data.txt");
-/// let query = Query::substring("old", "new");
+/// let query = Query::simple("old", "new");
 /// let console = Console::new();
 /// let file_patcher = FilePatcher::new(&console, &file, &query).unwrap();
 /// file_patcher.unwrap().run().unwrap();
@@ -137,7 +137,7 @@ mod tests {
 
         let file_path = temp_dir.path().join("without-trailing-newline.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line").unwrap();
-        let query = Query::substring("old", "new");
+        let query = Query::simple("old", "new");
         let console = Console::new();
         let file_patcher = FilePatcher::new(&console, &file_path, &query).unwrap();
         file_patcher.unwrap().run().unwrap();
@@ -147,7 +147,7 @@ mod tests {
 
         let file_path = temp_dir.path().join("with-trailing-newline.txt");
         fs::write(&file_path, "first line\nI say: old is nice\nlast line\n").unwrap();
-        let query = Query::substring("old", "new");
+        let query = Query::simple("old", "new");
         let file_patcher = FilePatcher::new(&console, &file_path, &query).unwrap();
         file_patcher.unwrap().run().unwrap();
         let actual = fs::read_to_string(&file_path).unwrap();

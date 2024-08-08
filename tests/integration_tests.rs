@@ -49,7 +49,7 @@ fn assert_not_replaced(path: &Path) {
 fn run_ruplacer(data_path: &Path, settings: Settings) -> Result<Stats> {
     let console = Console::new();
     let mut directory_patcher = DirectoryPatcher::new(&console, data_path, &settings);
-    directory_patcher.run(&Query::substring("old", "new"))?;
+    directory_patcher.run(&Query::simple("old", "new"))?;
     Ok(directory_patcher.stats())
 }
 
