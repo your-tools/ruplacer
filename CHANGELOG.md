@@ -1,3 +1,10 @@
+# 0.9.0 (2024-08-10)
+
+* **Breaking**: rename 'Query::substring' to 'Query::simple'
+* **Breaking**: rename '--subvert' to '--preserve-case'
+
+Hopefully those names are clearer for the user.
+
 # 0.8.3 (2024-03-08)
 
 * Switch to `cargo-dist` to make releases
