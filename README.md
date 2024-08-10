@@ -104,12 +104,12 @@ $ ruplacer '\(a\|o|)' u
 ```
 
 
-## Subvert mode
+## Preserving case while replacing
 
-Ruplacer has a `--subvert` option which works across a variety of case styles (lower case, snake case, and so on):
+Ruplacer has a `--preserve-case` option which works across a variety of case styles (lower case, snake case, and so on):
 
 ```
-$ ruplacer --subvert foo_bar spam_eggs
+$ ruplacer --preserve-case foo_bar spam_eggs
 Patching src/foo.txt
 -- foo_bar, FooBar, and FOO_BAR!
 ++ spam_eggs, SpamEggs, and SPAM_EGGS!

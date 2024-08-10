@@ -151,19 +151,19 @@ impl<'a> Replacer for SubstringReplacer<'a> {
     }
 }
 
-struct SubvertReplacer<'a> {
+struct PreserveCaseReplacer<'a> {
     items: &'a [(String, String)],
 }
 
-impl<'a> SubvertReplacer<'a> {
+impl<'a> PreserveCaseReplacer<'a> {
     fn new(items: &'a [(String, String)]) -> Self {
         Self { items }
     }
 }
 
-impl<'a> Replacer for SubvertReplacer<'a> {
+impl<'a> Replacer for PreserveCaseReplacer<'a> {
     fn replace(&self, buff: &str) -> Option<(usize, String, String)> {
-        // Note: replacing using subvert can get tricky
+        // Note: replacing using preserve_case can get tricky
         //
         // Let's say self.items contains
         //  [("old", "new"), ("Old", "New")]
@@ -233,7 +233,7 @@ fn get_fragments(input: &str, query: &Query) -> Fragments {
             let finder = RegexReplacer::new(regex, replacement);
             get_fragments_with_finder(input, finder)
         }
-        Query::Subvert(pattern, replacement) => {
+        Query::PreserveCase(pattern, replacement) => {
             fn to_ada_case(input: &str) -> String {
                 to_train_case(input).replace('-', "_")
             }
@@ -251,7 +251,7 @@ fn get_fragments(input: &str, query: &Query) -> Fragments {
                 items.push((function(pattern), function(replacement)));
             }
 
-            let finder = SubvertReplacer::new(&items);
+            let finder = PreserveCaseReplacer::new(&items);
             get_fragments_with_finder(input, finder)
         }
     }
@@ -349,11 +349,11 @@ mod tests {
     }
 
     #[test]
-    fn test_subvert() {
+    fn test_preserve_case() {
         let input = "let foo_bar = FooBar::new();";
         let pattern = "foo_bar";
         let replacement = "spam_eggs";
-        let query = Query::subvert(pattern, replacement);
+        let query = Query::preserve_case(pattern, replacement);
         let replacement = replace(input, &query).unwrap();
         assert_eq!(replacement.output(), "let spam_eggs = SpamEggs::new();");
     }

@@ -8,7 +8,7 @@ pub enum Query {
     /// using case conversion methods.
     /// This allows replacing FooBar with SpamEggs and foo_bar with spam_eggs
     /// using only one query
-    Subvert(String, String),
+    PreserveCase(String, String),
 }
 
 impl Query {
@@ -22,8 +22,8 @@ impl Query {
         Self::Regex(re, replacement.to_string())
     }
 
-    /// Constructor for the Subvert variant
-    pub fn subvert(pattern: &str, replacement: &str) -> Self {
-        Self::Subvert(pattern.to_string(), replacement.to_string())
+    /// Constructor for the PreserveCase variant
+    pub fn preserve_case(pattern: &str, replacement: &str) -> Self {
+        Self::PreserveCase(pattern.to_string(), replacement.to_string())
     }
 }

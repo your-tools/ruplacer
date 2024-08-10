@@ -47,7 +47,7 @@ impl Console {
     /// ```
     /// use ruplacer::{Console, Query, replace};
     /// let input = "let foo_bar = FooBar::new();";
-    /// let query = Query::subvert("foo_bar", "spam_eggs");
+    /// let query = Query::preserve_case("foo_bar", "spam_eggs");
     /// let replacement = replace(input, &query).unwrap();
     /// let console = Console::new();
     /// console.print_replacement("foo.rs:3", &replacement);

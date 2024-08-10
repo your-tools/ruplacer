@@ -46,7 +46,7 @@ Examples:
     $ ruplacer -- --foo-bar --spam-eggs
 
     Replace 'FooBar' with 'SpamEggs', 'foo_bar' with 'spam_eggs', ...
-    $ ruplacer --subvert FooBar SpamEggs
+    $ ruplacer --preserve-case FooBar SpamEggs
 "
 )]
 struct Options {
@@ -91,10 +91,10 @@ struct Options {
     word_regex: bool,
 
     #[arg(
-        long = "subvert",
-        help = "Replace all variants of the pattern (snake_case, CamelCase and so on)"
+        long = "preserve_case",
+        help = "Replace all case variants of the pattern (snake_case, CamelCase and so on)"
     )]
-    subvert: bool,
+    preserve_case: bool,
 
     #[arg(
         short = 't',
@@ -200,7 +200,7 @@ pub fn run() -> Result<()> {
         pattern,
         replacement,
         selected_file_types,
-        subvert,
+        preserve_case,
         word_regex,
     } = opt;
 
@@ -217,8 +217,8 @@ pub fn run() -> Result<()> {
 
     let query = if no_regex {
         Query::simple(&pattern, &replacement)
-    } else if subvert {
-        Query::subvert(&pattern, &replacement)
+    } else if preserve_case {
+        Query::preserve_case(&pattern, &replacement)
     } else {
         regex_query_or_die(&pattern, &replacement, word_regex)
     };
