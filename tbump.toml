@@ -34,6 +34,10 @@ cmd = "cargo test"
 name = "check changelog"
 cmd = "grep {new_version} CHANGELOG.md"
 
+[[before_commit]]
+name = "run semver checks"
+cmd = "cargo semver-checks"
+
 [[after_push]]
 name = "publish"
 cmd = "cargo publish"
