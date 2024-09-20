@@ -120,6 +120,13 @@ struct Options {
         help = "Whether to enable colorful output. Choose between 'always', 'auto', or 'never'. Default is 'auto'"
     )]
     color_when: Option<ColorWhen>,
+
+    #[arg(
+        short = 'e',
+        long = "allow-empty",
+        help = "Exits without error when no matches are found."
+    )]
+    allow_empty: bool,
 }
 
 fn regex_query_or_die(pattern: &str, replacement: &str, word: bool) -> Query {
@@ -202,6 +209,7 @@ pub fn run() -> Result<()> {
         selected_file_types,
         preserve_case,
         word_regex,
+        allow_empty
     } = opt;
 
     let dry_run = !go;
@@ -230,6 +238,7 @@ pub fn run() -> Result<()> {
         ignored,
         selected_file_types,
         ignored_file_types,
+        allow_empty
     };
 
     let path = path.unwrap_or_else(|| Path::new(".").to_path_buf());
@@ -265,12 +274,24 @@ fn run_on_directory(
     directory_patcher.run(&query)?;
     let stats = directory_patcher.stats();
     if stats.total_replacements() == 0 {
-        console.print_error(&format!(
-            "{}: {}",
-            "Error".bold().red(),
-            "nothing found to replace"
-        ));
-        process::exit(2);
+        match settings.allow_empty {
+            true => {
+                console.print_message(&format!(
+                    "{}",
+                    "nothing found to replace"
+                ));
+                process::exit(0);
+            },
+            false => {
+                console.print_error(&format!(
+                    "{}: {}",
+                    "Error".bold().red(),
+                    "nothing found to replace"
+                ));
+                process::exit(2);
+            }
+        }
+
     }
 
     let stats = &stats;
