@@ -15,4 +15,6 @@ pub struct Settings {
     pub selected_file_types: Vec<String>,
     /// List of file types to ignore (default: empty)
     pub ignored_file_types: Vec<String>,
+    /// Exits without an error when no matches are found (default: false)
+    pub allow_empty: bool,
 }
