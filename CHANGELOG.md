@@ -1,3 +1,7 @@
+# 0.10.0 (2024-10-12)
+
+* Fix #104: Add `--allow-empty` option to successfuly exit even when no matches are found. Patch by @roqvist
+
 # 0.9.1 (2024-10-12)
 
 * **Breaking**: rename '--preserve_case' to '--preserve-case'
