@@ -1,7 +1,12 @@
+# 0.9.1 (2024-10-12)
+
+* **Breaking**: rename '--preserve_case' to '--preserve-case'
+
 # 0.9.0 (2024-08-10)
 
 * **Breaking**: rename 'Query::substring' to 'Query::simple'
-* **Breaking**: rename '--subvert' to '--preserve-case'
+* **Breaking**: rename '--subvert' to '--preserve_case'
+  (the fact that this option is in "snake case" is a bug!)
 
 Hopefully those names are clearer for the user.
 
