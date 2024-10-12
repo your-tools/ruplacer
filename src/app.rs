@@ -276,10 +276,7 @@ fn run_on_directory(
     if stats.total_replacements() == 0 {
         match settings.allow_empty {
             true => {
-                console.print_message(&format!(
-                    "{}",
-                    "nothing found to replace"
-                ));
+                console.print_message("nothing found to replace");
                 process::exit(0);
             },
             false => {
