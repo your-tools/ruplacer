@@ -91,7 +91,7 @@ struct Options {
     word_regex: bool,
 
     #[arg(
-        long = "preserve_case",
+        long = "preserve-case",
         help = "Replace all case variants of the pattern (snake_case, CamelCase and so on)"
     )]
     preserve_case: bool,
