@@ -49,7 +49,7 @@ Examples:
     $ ruplacer --preserve-case FooBar SpamEggs
 "
 )]
-struct Options {
+pub struct Options {
     #[arg(long = "go", help = "Write the changes to the filesystem")]
     go: bool,
 
@@ -209,7 +209,7 @@ pub fn run() -> Result<()> {
         selected_file_types,
         preserve_case,
         word_regex,
-        allow_empty
+        allow_empty,
     } = opt;
 
     let dry_run = !go;
@@ -238,7 +238,7 @@ pub fn run() -> Result<()> {
         ignored,
         selected_file_types,
         ignored_file_types,
-        allow_empty
+        allow_empty,
     };
 
     let path = path.unwrap_or_else(|| Path::new(".").to_path_buf());
@@ -278,7 +278,7 @@ fn run_on_directory(
             true => {
                 console.print_message("nothing found to replace\n");
                 process::exit(0);
-            },
+            }
             false => {
                 console.print_error(&format!(
                     "{}: {}",
@@ -288,7 +288,6 @@ fn run_on_directory(
                 process::exit(2);
             }
         }
-
     }
 
     let stats = &stats;
