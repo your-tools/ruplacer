@@ -48,7 +48,7 @@ pub struct Replacement<'a> {
     output: String,
 }
 
-impl<'a> Replacement<'a> {
+impl Replacement<'_> {
     /// Return the output string
     pub fn output(&self) -> &str {
         &self.output
@@ -140,7 +140,7 @@ impl<'a> SubstringReplacer<'a> {
     }
 }
 
-impl<'a> Replacer for SubstringReplacer<'a> {
+impl Replacer for SubstringReplacer<'_> {
     fn replace(&self, buff: &str) -> Option<(usize, String, String)> {
         let index = buff.find(self.pattern)?;
         Some((
@@ -161,7 +161,7 @@ impl<'a> PreserveCaseReplacer<'a> {
     }
 }
 
-impl<'a> Replacer for PreserveCaseReplacer<'a> {
+impl Replacer for PreserveCaseReplacer<'_> {
     fn replace(&self, buff: &str) -> Option<(usize, String, String)> {
         // Note: replacing using preserve_case can get tricky
         //
@@ -209,7 +209,7 @@ impl<'a> RegexReplacer<'a> {
     }
 }
 
-impl<'a> Replacer for RegexReplacer<'a> {
+impl Replacer for RegexReplacer<'_> {
     fn replace(&self, buff: &str) -> Option<(usize, String, String)> {
         let regex_match = self.regex.find(buff)?;
         let index = regex_match.start();
