@@ -147,15 +147,17 @@ fn regex_query_or_die(pattern: &str, replacement: &str, word: bool) -> Query {
 // Set proper env variable so that the colored crate behaves properly.
 // See: https://bixense.com/clicolors/
 fn configure_color(when: &ColorWhen) {
+    // Safety: this is a private function that is only called once in main()
+    // So calling set_env_var is safe here
     match when {
-        ColorWhen::Always => std::env::set_var("CLICOLOR_FORCE", "1"),
-        ColorWhen::Never => std::env::set_var("CLICOLOR", "0"),
+        ColorWhen::Always => unsafe { std::env::set_var("CLICOLOR_FORCE", "1") },
+        ColorWhen::Never => unsafe { std::env::set_var("CLICOLOR", "0") },
         ColorWhen::Auto => {
             let is_a_tty = std::io::stdout().is_terminal();
             if is_a_tty {
-                std::env::set_var("CLICOLOR", "1")
+                unsafe { std::env::set_var("CLICOLOR", "1") }
             } else {
-                std::env::set_var("CLICOLOR", "0")
+                unsafe { std::env::set_var("CLICOLOR", "0") }
             }
         }
     }
@@ -209,7 +211,7 @@ pub fn run() -> Result<()> {
         selected_file_types,
         preserve_case,
         word_regex,
-        allow_empty
+        allow_empty,
     } = opt;
 
     let dry_run = !go;
@@ -238,7 +240,7 @@ pub fn run() -> Result<()> {
         ignored,
         selected_file_types,
         ignored_file_types,
-        allow_empty
+        allow_empty,
     };
 
     let path = path.unwrap_or_else(|| Path::new(".").to_path_buf());
@@ -278,7 +280,7 @@ fn run_on_directory(
             true => {
                 console.print_message("nothing found to replace\n");
                 process::exit(0);
-            },
+            }
             false => {
                 console.print_error(&format!(
                     "{}: {}",
@@ -288,7 +290,6 @@ fn run_on_directory(
                 process::exit(2);
             }
         }
-
     }
 
     let stats = &stats;
