@@ -147,8 +147,9 @@ fn regex_query_or_die(pattern: &str, replacement: &str, word: bool) -> Query {
 // Set proper env variable so that the colored crate behaves properly.
 // See: https://bixense.com/clicolors/
 fn configure_color(when: &ColorWhen) {
-    // Safety: this is a private function that is only called once in main()
-    // So calling set_env_var is safe here
+    // SAFETY: this is a private function that is only called once in main(),
+    // so no other thread will try and read the environment while we're calling
+    // set_var
     match when {
         ColorWhen::Always => unsafe { std::env::set_var("CLICOLOR_FORCE", "1") },
         ColorWhen::Never => unsafe { std::env::set_var("CLICOLOR", "0") },
