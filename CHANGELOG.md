@@ -1,3 +1,13 @@
+# 1.11.0 (2025-03-11)
+
+Time for a stable release!
+
+Only minor changes since latest version:
+
+* Bump to Rust 2024 edition
+* Bump many dependencies
+
+
 # 0.10.0 (2024-10-12)
 
 * Fix #104: Add `--allow-empty` option to successfully exit even when no matches are found. Patch by @roqvist
