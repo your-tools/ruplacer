@@ -11,19 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
 
-    - name: Install latest stable toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
-
-    - name: Install clippy
-      run: rustup component add clippy
-
-    - name: Run clippy
-      uses: actions-rs/clippy-check@v1
-      with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-targets -- --deny warnings
+    - run: rustup update
+    - run: rustup component add clippy
+    - run : cargo clippy --all-targets -- --deny warnings
