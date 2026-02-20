@@ -2,6 +2,8 @@
 
 # Ruplacer
 
+**This repository has moved to [codeberg](https://codeberg.org/your-tools/) - see you there !**
+
 Find and replace text in source files:
 
 ```
